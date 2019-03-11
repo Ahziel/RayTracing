@@ -16,7 +16,7 @@ public:
 	Dielectric() : m_indice(1.0f) {}
 	Dielectric(float indice) : m_indice(indice) {}
 
-	virtual bool scatter(const Ray &in, HitRecord &rec, Vec3f &attenuation, Ray &scattered) const override
+	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const override
 	{
 
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -24,24 +24,24 @@ public:
 		std::uniform_real_distribution<> dis(0.0f, 1.0f);
 
 
-		Vec3f outwardNormal;
-		Vec3f reflected = reflect(in.direction(), rec.N);
+		glm::vec3 outwardNormal;
+		glm::vec3 reflected = reflect(in.direction(), rec.N);
 		float niOverNt;
-		attenuation = Vec3f(1.0f, 1.0f, 1.0f);
-		Vec3f refracted;
+		attenuation = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 refracted;
 		float reflectProb;
 		float cosine;
-		if (dot(in.direction(), rec.N) > 0.0f)
+		if (glm::dot(in.direction(), rec.N) > 0.0f)
 		{
 			outwardNormal = -rec.N;
 			niOverNt = m_indice;
-			cosine = m_indice * dot(in.direction(), rec.N) / in.direction().length();
+			cosine = m_indice * glm::dot(in.direction(), rec.N) / in.direction().length();
 		}
 		else
 		{
 			outwardNormal = rec.N;
 			niOverNt = 1.0f / m_indice;
-			cosine = -dot(in.direction(), rec.N) / in.direction().length();
+			cosine = -glm::dot(in.direction(), rec.N) / in.direction().length();
 		}
 
 		if (refract(in.direction(), outwardNormal, niOverNt, refracted))

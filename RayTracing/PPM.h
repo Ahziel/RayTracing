@@ -2,7 +2,6 @@
 
 #include <ostream>
 #include <fstream>
-#include "Vector.h"
 
 /*
 
@@ -20,13 +19,13 @@ public:
 
 	PPM(unsigned int width, unsigned int height) : m_width(width), m_height(height), m_size(width * height)
 	{
-		m_pixels = new Vec3i[m_size];
+		m_pixels = new glm::ivec3[m_size];
 	}
 
 	~PPM() { delete[] m_pixels; }
 
-	void set(const int i, const int j, const Vec3i color) { m_pixels[i * m_width + j] = color; }
-	Vec3i get(const int i, const int j) const { return m_pixels[i * m_width + j]; }
+	void set(const int i, const int j, const glm::ivec3 color) { m_pixels[i * m_width + j] = color; }
+	glm::ivec3 get(const int i, const int j) const { return m_pixels[i * m_width + j]; }
 
 	int width() const { return m_width; }
 	int height() const { return m_height; }
@@ -41,7 +40,7 @@ public:
 		{
 			for (int i = 0; i < m_width; i++)
 			{
-				Vec3i pixel = m_pixels[j * m_width + i];
+				glm::ivec3 pixel = m_pixels[j * m_width + i];
 
 				ofs << pixel.x << " " << pixel.y << " " << pixel.z << "\n";
 			}
@@ -52,12 +51,12 @@ public:
 
 
 	// Handle double bracket operator (TO DO : check if it's safe)
-	const Vec3i* operator [] (int i) const
+	const glm::ivec3* operator [] (int i) const
 	{
 		return &m_pixels[i * m_width];
 	}
 
-	Vec3i* operator [] (int i)
+	glm::ivec3* operator [] (int i)
 	{
 		return &m_pixels[i * m_width];
 	}
@@ -70,7 +69,7 @@ private:
 	unsigned int m_size;
 
 	// Array for RGB value
-	Vec3i *m_pixels;
+	glm::ivec3 *m_pixels;
 };
 
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Vector.h"
+#include <glm/vec3.hpp>
+#include <glm/geometric.hpp>
 
 
 class Ray
@@ -8,14 +9,14 @@ class Ray
 public :
 
 	Ray() : m_origin(0), m_direction(0){}
-	Ray(const Vec3f& origin, const Vec3f& direction) : m_origin(origin), m_direction(direction) {}
-	Vec3f origin() const { return m_origin; }
-	Vec3f direction() const { return m_direction; }
-	Vec3f pointAtParameter(const float t) const { return m_origin + m_direction * t; }
+	Ray(const glm::vec3& origin, const glm::vec3& direction) : m_origin(origin), m_direction(glm::normalize(direction)) {}
+	glm::vec3 origin() const { return m_origin; }
+	glm::vec3 direction() const { return m_direction; }
+	glm::vec3 pointAtParameter(const float t) const { return m_origin + m_direction * t; }
 
 private :
 
-	Vec3f m_origin;
-	Vec3f m_direction;
+	glm::vec3 m_origin;
+	glm::vec3 m_direction;
 
 };

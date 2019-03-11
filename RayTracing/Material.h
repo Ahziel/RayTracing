@@ -9,32 +9,32 @@
 // http://www.pbr-book.org/3ed-2018/Monte_Carlo_Integration/2D_Sampling_with_Multidimensional_Transformations.html#UniformSampleHemisphere
 //
 // Maybe put it in another header file that I give to Material.h
-Vec3f randomUnitSphere()
+glm::vec3 randomUnitSphere()
 {
 	std::random_device rd;  //Will be used to obtain a seed for the random number engine
 	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<> dis(0.0, 1.0);
 
-	Vec3f P;
+	glm::vec3 P;
 	do {
-		P = 2.0f * Vec3f(dis(gen), dis(gen), dis(gen)) - Vec3f(1.0f);
-	} while (P.squareLength() >= 1.0f);
+		P = 2.0f * glm::vec3(dis(gen), dis(gen), dis(gen)) - glm::vec3(1.0f);
+	} while (glm::dot(P,P) >= 1.0f); // TODO : Check for P.length() * P.length(), before i used my gunction squaredLength
 	return P;
 }
 
 // TODO : Understand it and like randomUnitSphere
 // Maybe put it in another header file that I give to Material.h
-Vec3f reflect(const Vec3f& v, const Vec3f& n)
+glm::vec3 reflect(const glm::vec3& v, const glm::vec3& n)
 {
-	return v - 2.0f * dot(v, n) * n;
+	return v - 2.0f * glm::dot(v, n) * n;
 }
 
 // TODO : Understand it (Snell Law)
 // Maybe put it in another header file that I give to Material.h
-bool refract(const Vec3f &v, const Vec3f &n, float niOverNt, Vec3f &refracted)
+bool refract(const glm::vec3 &v, const glm::vec3 &n, float niOverNt, glm::vec3 &refracted)
 {
-	Vec3f uv = normalize(v);
-	float dt = dot(uv, n);
+	glm::vec3 uv = normalize(v);
+	float dt = glm::dot(uv, n);
 	float discriminant = 1.0f - niOverNt * niOverNt * (1.0 - dt * dt);
 	if (discriminant > 0.0f)
 	{
@@ -50,5 +50,5 @@ bool refract(const Vec3f &v, const Vec3f &n, float niOverNt, Vec3f &refracted)
 class Material
 {
 public:
-	virtual bool scatter(const Ray &in, HitRecord &rec, Vec3f &attenuation, Ray &scattered) const = 0;
+	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const = 0;
 };
