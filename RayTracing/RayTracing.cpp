@@ -1,6 +1,3 @@
-// DARE.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
 
 #include "Vector.h"
@@ -18,7 +15,6 @@
 #include <limits>
 #include <vector>
 #include <random>
-#include "DARE.h"
 
 const float PI = 3.14159265359f;
 
@@ -102,7 +98,7 @@ int main() {
 	std::vector<Hitable*> list;
 	list.push_back(new Sphere(Vec3f(0.0f, 0.0f, -1.0f), 0.5f, new Lambertian(Vec3f(0.8f, 0.3f, 0.3f))));
 	list.push_back(new Sphere(Vec3f(0.0f, -100.5f, -1.0f), 100.0f, new Lambertian(Vec3f(0.8f, 0.8f, 0.0f))));
-	list.push_back(new Sphere(Vec3f(1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3f(0.8f, 0.6f, 0.2f),0.3f)));
+	list.push_back(new Sphere(Vec3f(1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3f(0.8f, 0.6f, 0.2f), 0.3f)));
 	list.push_back(new Sphere(Vec3f(-1.0f, 0.0f, -1.0f), 0.5f, new Dielectric(1.5f)));
 	list.push_back(new Sphere(Vec3f(-1.0f, 0.0f, -1.0f), -0.45f, new Dielectric(1.5f)));
 
@@ -137,7 +133,7 @@ int main() {
 			int green = int(255.99 * col.y);
 			int blue = int(255.99 * col.z);
 
-			image[j][i] = Vec3i(red,green,blue);
+			image[j][i] = Vec3i(red, green, blue);
 		}
 	}
 
