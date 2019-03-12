@@ -24,6 +24,7 @@ public :
 			m_fuzz = 1.0f;
 		}
 	}
+	~Metal() {}
 
 	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const override
 	{

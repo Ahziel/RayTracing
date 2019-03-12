@@ -14,6 +14,7 @@
 #include <limits>
 #include <vector>
 #include <random>
+#include <memory>
 
 const float PI = 3.14159265359f;
 
@@ -22,7 +23,7 @@ std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 std::uniform_real_distribution<> dis(0.0f, 1.0f);
 
 // TODO : Check to change this pointer for a smartPointer ?
-glm::vec3 color(const Ray& r, Hitable *world, int depth)
+glm::vec3 color(const Ray& r, std::unique_ptr<Hitable> &world, int depth)
 {
 	HitRecord rec;
 
@@ -48,41 +49,41 @@ glm::vec3 color(const Ray& r, Hitable *world, int depth)
 	}
 }
 
-Hitable * finalRandomScene()
+std::unique_ptr<Hitable> finalRandomScene()
 {
-	std::vector<Hitable*> list;
-	list.push_back(new Sphere(glm::vec3(0.0f, -1000.0f, 0.0f), 1000, new Lambertian(glm::vec3(0.5f, 0.5f, 0.5f))));
+	std::vector<std::shared_ptr<Hitable> > list;
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -1000.0f, 0.0f), 1000, std::make_shared<Lambertian>(glm::vec3(0.5f, 0.5f, 0.5f))));
 
 	for (int a = -11; a < 11; a++)
 	{
 		for (int b = -11; b < 11; b++)
 		{
-			float chooseMat = dis(gen);
+			float chooseMat = float(dis(gen));
 			glm::vec3 center(a + 0.9f * dis(gen), 0.2, b + 0.9f * dis(gen));
 			if ((center - glm::vec3(4.0f, 0.2f, 0.0f)).length() > 0.9f)
 			{
 				if (chooseMat < 0.8f) // Diffuse material
 				{
-					list.push_back(new Sphere(center, 0.2f, new Lambertian(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
 				}
 				else if (chooseMat < 0.95f) // Metal material
 				{
-					list.push_back(new Sphere(center, 0.2f, new Metal(glm::vec3(0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen))), 0.5f * dis(gen))));
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Metal>(glm::vec3(0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen))), 0.5f * dis(gen))));
 				}
 				else // Glass material
 				{
-					list.push_back(new Sphere(center, 0.2f, new Dielectric(1.5f)));
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Dielectric>(1.5f)));
 				}
 			}
 		}
 	}
 
-	list.push_back(new Sphere(glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, new Dielectric(1.5f)));
-	list.push_back(new Sphere(glm::vec3(-4.0f, 1.0f, 0.0f), 1.0f, new Lambertian(glm::vec3(0.4f, 0.2f, 0.1f))));
-	list.push_back(new Sphere(glm::vec3(4.0, 1.0f, 0.0f), 1.0f, new Metal(glm::vec3(0.7f, 0.6f, 0.5f), 0.0f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, std::make_shared<Dielectric>(1.5f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-4.0f, 1.0f, 0.0f), 1.0f, std::make_shared<Lambertian>(glm::vec3(0.4f, 0.2f, 0.1f))));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(4.0, 1.0f, 0.0f), 1.0f, std::make_shared<Metal>(glm::vec3(0.7f, 0.6f, 0.5f), 0.0f)));
 
 
-	return new HitableList(list);
+	return std::make_unique<HitableList>(list);
 }
 
 int main() {
@@ -90,18 +91,19 @@ int main() {
 	// Set size
 	int width = 600;
 	int height = 300;
-	int loopAA = 2;
+	int loopAA = 15;
 
 	PPM image(width, height);
 
-	std::vector<Hitable*> list;
-	list.push_back(new Sphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, new Lambertian(glm::vec3(0.8f, 0.3f, 0.3f))));
-	list.push_back(new Sphere(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, new Lambertian(glm::vec3(0.8f, 0.8f, 0.0f))));
-	list.push_back(new Sphere(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, new Metal(glm::vec3(0.8f, 0.6f, 0.2f), 0.3f)));
-	list.push_back(new Sphere(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, new Dielectric(1.5f)));
-	list.push_back(new Sphere(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, new Dielectric(1.5f)));
+	std::vector<std::shared_ptr<Hitable>> list;
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.3f, 0.3f))));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.8f, 0.0f))));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Metal>(glm::vec3(0.8f, 0.6f, 0.2f), 0.3f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Dielectric>(1.5f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));
 
-	Hitable *world = finalRandomScene();
+	//std::unique_ptr<Hitable>  world = std::make_unique<HitableList>(list);
+	std::unique_ptr<Hitable>  world(finalRandomScene());
 
 	// Camera information
 	glm::vec3 origin(13.0f, 2.0f, 3.0f);

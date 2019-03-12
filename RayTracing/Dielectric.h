@@ -15,6 +15,7 @@ public:
 
 	Dielectric() : m_indice(1.0f) {}
 	Dielectric(float indice) : m_indice(indice) {}
+	~Dielectric() {}
 
 	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const override
 	{

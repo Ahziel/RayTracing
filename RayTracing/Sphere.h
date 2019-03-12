@@ -2,13 +2,18 @@
 
 #include "Hitable.h"
 
+#include <memory>
+
+// TODO : Check if there is  a cycle with HitRecord
+
 class Sphere : public Hitable
 {
 
 public :
 
 	Sphere() : m_center(0.0f), m_radius(0.0f) {}
-	Sphere(const glm::vec3& center, const float& radius, Material *mat) : m_center(center), m_radius(radius), m_mat(mat) {}
+	Sphere(const glm::vec3& center, const float& radius, std::shared_ptr<Material> mat) : m_center(center), m_radius(radius), m_mat(mat) {}
+	~Sphere() {}
 
 	glm::vec3 center() const { return m_center; }
 	float radius() const { return m_radius; }
@@ -56,5 +61,5 @@ public :
 private :
 	glm::vec3 m_center;
 	float m_radius;
-	Material *m_mat;
+	std::shared_ptr<Material> m_mat;
 };

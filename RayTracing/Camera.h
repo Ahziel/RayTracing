@@ -25,7 +25,7 @@ public:
 		m_lensRadius = aperture / 2;
 
 		// Put a global variable for PI
-		float theta = vfov * 3.1415 / 180;
+		float theta = vfov * 3.1415f / 180.0f;
 		float halfHeight = tan(theta / 2);
 		float halfWidth = aspect * halfHeight;
 
@@ -39,6 +39,7 @@ public:
 		m_horizontal = 2 * halfWidth * m_u * focusDist;
 		m_vertical = 2 * halfHeight * m_v * focusDist;
 	}
+	~Camera() {}
 
 	Ray generateRay(float u, float v) const
 	{

@@ -35,7 +35,7 @@ bool refract(const glm::vec3 &v, const glm::vec3 &n, float niOverNt, glm::vec3 &
 {
 	glm::vec3 uv = normalize(v);
 	float dt = glm::dot(uv, n);
-	float discriminant = 1.0f - niOverNt * niOverNt * (1.0 - dt * dt);
+	float discriminant = 1.0f - niOverNt * niOverNt * (1.0f - dt * dt);
 	if (discriminant > 0.0f)
 	{
 		refracted = niOverNt * (uv - n * dt) - n * sqrt(discriminant);

@@ -1,24 +1,30 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "Hitable.h"
 
 class HitableList : public Hitable {
 
 public:
 	HitableList() {}
-	HitableList(std::vector<Hitable*> l) { m_listHitables = l; m_listSize = l.size(); }
+	// Here I have to use share_ptr because I copy the vector in the constructor
+	// TODO : Check is it's the best way
+	HitableList(std::vector< std::shared_ptr<Hitable>> l) { m_listHitables = l; m_listSize = l.size(); }
+	~HitableList(){}
+
+
 	virtual bool hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const;
 	// TODO : check if vector is the best
-	std::vector<Hitable*> m_listHitables;
+	std::vector<std::shared_ptr<Hitable>> m_listHitables;
 	unsigned int m_listSize;
 };
 
 bool HitableList::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const {
 	HitRecord tempRec;
 	bool hitAnything = false;
-	double closestSoFar = t_max;
-	for (int i = 0; i < m_listSize; i++)
+	float closestSoFar = t_max;
+	for (unsigned int i = 0; i < m_listSize; i++)
 	{
 		if (m_listHitables[i]->hit(r, t_min, closestSoFar, tempRec)) {
 			hitAnything = true;

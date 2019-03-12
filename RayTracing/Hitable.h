@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Ray.h"
+#include <memory>
 
 // Check why it's needed
 class Material;
@@ -15,7 +16,7 @@ struct HitRecord
 	glm::vec3 N;
 	// Material found
 	// TODO : Change it for a smart pointer
-	Material *matPtr;
+	std::shared_ptr<Material> matPtr;
 };
 
 class Hitable

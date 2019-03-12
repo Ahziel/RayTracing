@@ -16,6 +16,7 @@ public :
 	// Constructors
 	Lambertian() : m_albedo(0.0f) {}
 	Lambertian(const glm::vec3& albedo) : m_albedo(albedo) {}
+	~Lambertian() {}
 
 	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const override
 	{
