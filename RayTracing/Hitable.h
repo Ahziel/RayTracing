@@ -22,5 +22,5 @@ struct HitRecord
 class Hitable
 {
 public : 
-	virtual bool hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const = 0;
+	virtual bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const = 0;
 };

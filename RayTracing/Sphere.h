@@ -22,7 +22,7 @@ public :
 	void setCenter(const glm::vec3& center) { m_center = center; }
 	void setRadius(const float radius) { m_radius = radius; }
 
-	bool hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const
+	bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const
 	{
 		// Add to global variable for stats
 		numberOfRaySphereTest += 1;

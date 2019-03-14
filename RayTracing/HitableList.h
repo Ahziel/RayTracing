@@ -14,19 +14,19 @@ public:
 	~HitableList(){}
 
 
-	virtual bool hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const;
+	virtual bool intersect(const Ray &r, float t_min, float t_max, HitRecord &rec) const;
 	// TODO : check if vector is the best
 	std::vector<std::shared_ptr<Hitable>> m_listHitables;
 	unsigned int m_listSize;
 };
 
-bool HitableList::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const {
+bool HitableList::intersect(const Ray &r, float t_min, float t_max, HitRecord &rec) const {
 	HitRecord tempRec;
 	bool hitAnything = false;
 	float closestSoFar = t_max;
 	for (unsigned int i = 0; i < m_listSize; i++)
 	{
-		if (m_listHitables[i]->hit(r, t_min, closestSoFar, tempRec)) {
+		if (m_listHitables[i]->intersect(r, t_min, closestSoFar, tempRec)) {
 			hitAnything = true;
 			closestSoFar = tempRec.t;
 			rec = tempRec;

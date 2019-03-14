@@ -51,7 +51,7 @@ glm::vec3 color(const Ray& r, std::unique_ptr<Hitable> &world, int depth)
 {
 	HitRecord rec;
 
-	if (world->hit(r, 0.001f, std::numeric_limits<float>::max(), rec))
+	if (world->intersect(r, 0.001f, std::numeric_limits<float>::max(), rec))
 	{
 		Ray scattered;
 		glm::vec3 attenuation;
