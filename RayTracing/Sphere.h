@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hitable.h"
+#include "Stats.h"
 
 #include <memory>
 
@@ -23,6 +24,9 @@ public :
 
 	bool hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const
 	{
+		// Add to global variable for stats
+		numberOfRaySphereTest += 1;
+
 		// oc is the distance between the origin of the ray and the center of the sphere
 		glm::vec3 oc = r.origin() - m_center;
 
@@ -43,6 +47,10 @@ public :
 				rec.P = r.pointAtParameter(temp);
 				rec.N = normalize(rec.P - m_center);
 				rec.matPtr = m_mat;
+
+				// Add to global variable for stats
+				numberOfRaySphereIntersection += 1;
+				
 				return true;
 			}
 			temp = (-b + sqrt(discriminant)) / (2.0f * a);
@@ -52,6 +60,10 @@ public :
 				rec.P = r.pointAtParameter(temp);
 				rec.N = normalize(rec.P - m_center);
 				rec.matPtr = m_mat;
+				
+				// Add to global variable for stats
+				numberOfRaySphereIntersection += 1;
+
 				return true;
 			}
 		}

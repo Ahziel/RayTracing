@@ -10,17 +10,41 @@
 #include "Metal.h"
 #include "Dielectric.h"
 
+#include "Stats.h"
+
 #include <iostream>
 #include <limits>
 #include <vector>
 #include <random>
+
+// For smart pointer
 #include <memory>
+// To check execution time
+#include <chrono>
+#include <ctime>  
 
 const float PI = 3.14159265359f;
 
 std::random_device rd;  //Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 std::uniform_real_distribution<> dis(0.0f, 1.0f);
+
+// This function reset the performance statistique variable
+void resetStat()
+{
+	numberOfGeometry = 0;
+	numberOfPrimaryRay = 0;
+	numberOfRaySphereTest = 0;
+	numberOfRaySphereIntersection = 0;
+}
+
+void printStat()
+{
+	std::cout << "Total number of geometry : "  << numberOfGeometry << std::endl;
+	std::cout << "Total number of primary ray : " << numberOfPrimaryRay << std::endl;
+	std::cout << "Total number of ray-spheres tests : " << numberOfRaySphereTest << std::endl;
+	std::cout << "Total number of ray-spheres intersections : " << numberOfRaySphereIntersection << std::endl;
+}
 
 // TODO : Check to change this pointer for a smartPointer ?
 glm::vec3 color(const Ray& r, std::unique_ptr<Hitable> &world, int depth)
@@ -82,25 +106,32 @@ std::unique_ptr<Hitable> finalRandomScene()
 	list.push_back(std::make_shared<Sphere>(glm::vec3(-4.0f, 1.0f, 0.0f), 1.0f, std::make_shared<Lambertian>(glm::vec3(0.4f, 0.2f, 0.1f))));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(4.0, 1.0f, 0.0f), 1.0f, std::make_shared<Metal>(glm::vec3(0.7f, 0.6f, 0.5f), 0.0f)));
 
+	// TODO : find a better way to do this
+	numberOfGeometry = list.size();
 
 	return std::make_unique<HitableList>(list);
 }
 
 int main() {
 
+	resetStat();
+
 	// Set size
-	int width = 600;
-	int height = 300;
-	int loopAA = 15;
+	int width = 200;
+	int height = 100;
+	int loopAA = 1;
+
+	// TODO : find a better way to do this
+	numberOfPrimaryRay = width * height * loopAA;
 
 	PPM image(width, height);
 
-	std::vector<std::shared_ptr<Hitable>> list;
+	/*std::vector<std::shared_ptr<Hitable>> list;
 	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.3f, 0.3f))));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.8f, 0.0f))));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Metal>(glm::vec3(0.8f, 0.6f, 0.2f), 0.3f)));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Dielectric>(1.5f)));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));*/
 
 	//std::unique_ptr<Hitable>  world = std::make_unique<HitableList>(list);
 	std::unique_ptr<Hitable>  world(finalRandomScene());
@@ -112,6 +143,9 @@ int main() {
 	float aperture = 0.1f;
 
 	Camera cam(origin, lookat, glm::vec3(0.0, 1.0, 0.0), 20.0f, float(width) / float(height), aperture, distToFocus);
+
+	// Start time of the rendering
+	auto start = std::chrono::system_clock::now();
 
 	for (int j = 0; j < height; j++)
 	{
@@ -138,6 +172,17 @@ int main() {
 		}
 	}
 
+	// End time of the rendering
+	auto end = std::chrono::system_clock::now();
+
+	std::chrono::duration<double> elapsed_seconds = end - start;
+	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+	std::cout << "elapsed time: " << elapsed_seconds.count() << std::endl;
+	printStat();
+
 	image.write("test");
+
+	std::cin.get();
 
 }
