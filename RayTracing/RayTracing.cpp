@@ -1,10 +1,12 @@
 #include "stdafx.h"
 
 #include "Ray.h"
-#include "Sphere.h"
 #include "HitableList.h"
 #include "Camera.h"
 #include "PPM.h"
+
+#include "Sphere.h"
+#include "MovingSphere.h"
 
 #include "Lambertian.h"
 #include "Metal.h"
@@ -24,10 +26,6 @@
 #include <ctime>  
 
 const float PI = 3.14159265359f;
-
-std::random_device rd;  //Will be used to obtain a seed for the random number engine
-std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-std::uniform_real_distribution<> dis(0.0f, 1.0f);
 
 // This function reset the performance statistique variable
 void resetStat()
@@ -88,11 +86,15 @@ std::unique_ptr<Hitable> finalRandomScene()
 			{
 				if (chooseMat < 0.8f) // Diffuse material
 				{
-					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
+					//list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
+					// TO REMOVE
+					list.push_back(std::make_shared<MovingSphere>(center, center + glm::vec3(0.0f, dis(gen) * 0.5f, 0.0f), 0.0f, 1.0f, 0.2f, 
+						std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
 				}
 				else if (chooseMat < 0.95f) // Metal material
 				{
-					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Metal>(glm::vec3(0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen))), 0.5f * dis(gen))));
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, 
+						std::make_shared<Metal>(glm::vec3(0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen)), 0.5f * (1.0f + dis(gen))), 0.5f * dis(gen))));
 				}
 				else // Glass material
 				{
@@ -117,9 +119,9 @@ int main() {
 	resetStat();
 
 	// Set size
-	int width = 200;
-	int height = 100;
-	int loopAA = 1;
+	int width = 600;
+	int height = 300;
+	int loopAA = 15;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -140,9 +142,9 @@ int main() {
 	glm::vec3 origin(13.0f, 2.0f, 3.0f);
 	glm::vec3 lookat(0.0f, 0.0f, 0.0f);
 	float distToFocus = 10.0f;
-	float aperture = 0.1f;
+	float aperture = 0.0f;
 
-	Camera cam(origin, lookat, glm::vec3(0.0, 1.0, 0.0), 20.0f, float(width) / float(height), aperture, distToFocus);
+	Camera cam(origin, lookat, glm::vec3(0.0, 1.0, 0.0), 20.0f, float(width) / float(height), aperture, distToFocus, 0.0, 1.0);
 
 	// Start time of the rendering
 	auto start = std::chrono::system_clock::now();

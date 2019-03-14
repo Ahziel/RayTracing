@@ -51,17 +51,17 @@ public:
 		}
 		else
 		{
-			scattered = Ray(rec.P, reflected);
+			scattered = Ray(rec.P, reflected, in.time());
 			reflectProb = 1.0f;
 		}
 
 		if (dis(gen) < reflectProb)
 		{
-			scattered = Ray(rec.P, reflected);
+			scattered = Ray(rec.P, reflected, in.time());
 		}
 		else
 		{
-			scattered = Ray(rec.P, refracted);
+			scattered = Ray(rec.P, refracted, in.time());
 		}
 		return true;
 	}

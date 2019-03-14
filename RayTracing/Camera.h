@@ -4,13 +4,13 @@
 #include <random>
 //Change this class to use matrix
 
+// Random - Need to replace
+std::random_device rd;  //Will be used to obtain a seed for the random number engine
+std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+std::uniform_real_distribution<> dis(0.0f, 1.0f);
+
 glm::vec3 randomInUnitDisk()
 {
-	// Random - Need to replace
-	std::random_device rd;  //Will be used to obtain a seed for the random number engine
-	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	std::uniform_real_distribution<> dis(0.0f, 1.0f);
-
 	glm::vec3 p;
 	do {
 		p = 2.0f * glm::vec3(dis(gen), dis(gen), 0.0f) - glm::vec3(1.0f, 1.0f, 0.0f);
@@ -20,7 +20,10 @@ glm::vec3 randomInUnitDisk()
 
 class Camera {
 public:
-	Camera(glm::vec3 origin, glm::vec3 lookat, glm::vec3 vup, float vfov, float aspect, float aperture, float focusDist) {
+	Camera(glm::vec3 origin, glm::vec3 lookat, glm::vec3 vup, float vfov, float aspect, float aperture, float focusDist, float time0, float time1) {
+
+		m_time0 = time0;
+		m_time1 = time1;
 
 		m_lensRadius = aperture / 2;
 
@@ -45,7 +48,8 @@ public:
 	{
 		glm::vec3 rd = m_lensRadius * randomInUnitDisk();
 		glm::vec3 offset = m_u * rd.x + m_v * rd.y;
-		return Ray(m_origin + offset, m_lowerLeftCorner + u * m_horizontal + v * m_vertical - m_origin - offset);
+		float time = m_time0 + dis(gen) * (m_time1 - m_time0);
+		return Ray(m_origin + offset, m_lowerLeftCorner + u * m_horizontal + v * m_vertical - m_origin - offset, time);
 	}
 
 	// Basis
@@ -55,4 +59,6 @@ public:
 	glm::vec3 m_horizontal;
 	glm::vec3 m_vertical;
 	float m_lensRadius;
+
+	float m_time0, m_time1; // Variables for shutter open/close times
 };

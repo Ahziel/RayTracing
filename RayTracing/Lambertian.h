@@ -21,7 +21,7 @@ public :
 	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const override
 	{
 		glm::vec3 target = rec.P + rec.N + randomUnitSphere();
-		scattered = Ray(rec.P, target - rec.P);
+		scattered = Ray(rec.P, target - rec.P, in.time());
 		attenuation = m_albedo;
 		return true;
 	}
