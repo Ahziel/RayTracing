@@ -6,6 +6,7 @@
 // Check why it's needed
 class Material;
 
+// TODO : Put this struct in Ray
 struct HitRecord
 {
 	// t value for the equation of the Ray

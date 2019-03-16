@@ -6,6 +6,7 @@
 #include <limits>
 #include <algorithm>
 
+
 class AABB
 {
 public :
@@ -50,7 +51,7 @@ public :
 
 	// TODO : add inline ?
 	// Compare to Lamarche version and Peter Shirley version
-	bool intersect(const Ray &r, float tmin, float tmax) const
+	bool intersect(const Ray &r, float tmin, float tmax, float &entryT, float &exitT) const
 	{
 		float tmin, tmax, tymin, tymax, tzmin, tzmax;
 
@@ -76,7 +77,8 @@ public :
 		if (tzmax < tmax)
 			tmax = tzmax;
 
-		return true;
+		entryT = tmin;
+		exitT = tmax;
 	}
 
 private :
