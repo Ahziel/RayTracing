@@ -8,12 +8,20 @@ class Ray
 {
 public :
 
-	Ray() : m_origin(0), m_direction(0), m_time(0){}
-	Ray(const glm::vec3& origin, const glm::vec3& direction, float time) : m_origin(origin), m_direction(glm::normalize(direction)), m_time(time) {}
+	Ray() : m_origin(0.0f), m_direction(0.0f), m_invDirection(0.0f), m_sign(0), m_time(0.0f){}
+	Ray(const glm::vec3& origin, const glm::vec3& direction, float time) : m_origin(origin), m_direction(glm::normalize(direction)), m_time(time) 
+	{
+		m_invDirection = 1.0f / m_direction;
+		m_sign.x = (m_direction.x < 0.0f);
+		m_sign.y = (m_direction.y < 0.0f);
+		m_sign.z = (m_direction.z < 0.0f);
+	}
 	~Ray() {}
 
 	glm::vec3 origin() const { return m_origin; }
 	glm::vec3 direction() const { return m_direction; }
+	glm::vec3 invDirection() const { return m_invDirection; }
+	glm::ivec3 sign() const { return m_sign; }
 	float time() const { return m_time; }
 
 	glm::vec3 pointAtParameter(const float t) const { return m_origin + m_direction * t; }
@@ -22,6 +30,9 @@ private :
 
 	glm::vec3 m_origin;
 	glm::vec3 m_direction;
+	glm::vec3 m_invDirection;
+	// Store sign of the ray
+	glm::ivec3 m_sign;
 	float m_time;
 
 };
