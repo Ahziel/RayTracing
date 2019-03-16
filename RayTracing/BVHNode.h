@@ -7,28 +7,103 @@
 #include "Hitable.h"
 #include "AABB.h"
 
-class BVHNode : Hitable
+class BVHNode : public Hitable
 {
 public:
 
-	BVHNode() {}
+	BVHNode() : m_leftChild(nullptr), m_rightChild(nullptr), m_hitables(), m_sizeSubdiv(32), m_box() {}
 
-	BVHNode(const std::vector<Hitable> &hitables, int sizeSubdiv = 32) : m_hitables(hitables), m_sizeSubdiv(sizeSubdiv), m_leftChild(nullptr), m_rightChild(nullptr)
+	BVHNode(const std::vector<Hitable> &hitables, int sizeSubdiv = 32) : m_sizeSubdiv(sizeSubdiv), m_leftChild(nullptr), m_rightChild(nullptr)
 	{
+		m_box = AABB();
+
+		for (auto& s : hitables) {
+			m_box.update(s.getAABB());
+		}
+
+		if (!hitables.size() > m_sizeSubdiv)
+		{
+			m_hitables = hitables;
+		}
+		else
+		{
+			std::vector<Hitable> leftList;
+			std::vector<Hitable> rightList;
+
+			std::random_device rd;     // only used once to initialise (seed) engine
+			std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+			std::uniform_int_distribution<int> uni(0, 2); // guaranteed unbiased
+
+			int axis = uni(rng);
+
+			// Sort on a axis unsing lambda function
+			std::sort(hitables.begin(), hitables.end(), 
+			[axis](const Hitable & a, const Hitable & b) -> bool
+			{
+				return a.center()[axis] > b.center()[axis];
+			});
+
+			std::vector<Hitable> leftList(hitables.begin(), hitables.begin() + hitables.size() / 2);
+			std::vector<Hitable> rightList(hitables.begin() + hitables.size() / 2, hitables.end());
+
+
+			m_leftChild = std::make_unique<BVHNode>(leftList);
+			m_rightChild = std::make_unique<BVHNode>(rightList);
+		}
 	}
 
 	~BVHNode(){}
 
-	void init(const std::vector<Hitable> &spheres, int sizeSubdiv = 32)
+	void init(const std::vector<Hitable> &hitables, int sizeSubdiv = 32)
 	{
+		m_box = AABB();
+
+		for (auto& s : hitables) {
+			m_box.update(s.getAABB());
+		}
+
+		if (!hitables.size() > m_sizeSubdiv)
+		{
+			m_hitables = hitables;
+		}
+		else
+		{
+			std::vector<Hitable> leftList;
+			std::vector<Hitable> rightList;
+
+			std::random_device rd;     // only used once to initialise (seed) engine
+			std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+			std::uniform_int_distribution<int> uni(0, 2); // guaranteed unbiased
+
+			int axis = uni(rng);
+
+			// Sort on a axis unsing lambda function
+			sort(hitables.begin(), hitables.end(),
+				[axis](const Hitable & a, const Hitable & b) -> bool
+			{
+				return a.center()[axis] > b.center()[axis];
+			});
+
+			std::vector<Hitable> leftList(hitables.begin(), hitables.begin() + hitables.size() / 2);
+			std::vector<Hitable> rightList(hitables.begin() + hitables.size() / 2, hitables.end());
+
+
+			m_leftChild = std::make_unique<BVHNode>(leftList);
+			m_rightChild = std::make_unique<BVHNode>(rightList);
+		}
 	}
 
-	AABB getAABB() const
+	glm::vec3 center() const override
+	{
+		return (m_box.getMin() + m_box.getMax()) / 2.0f;
+	}
+
+	AABB getAABB() const override
 	{
 		return m_box;
 	}
 
-	bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const
+	bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const override
 	{
 		float entryT, exitT;
 		bool hitAnything = false;

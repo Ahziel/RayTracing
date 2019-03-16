@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Hitable.h"
 #include "Ray.h"
-#include "Sphere.h"
 
 #include <limits>
 #include <algorithm>
@@ -24,7 +24,17 @@ public :
 		m_bounds[1] = max;
 	}
 
-	bool isEmpty()
+	glm::vec3 getMin() const
+	{
+		return m_bounds[0];
+	}
+
+	glm::vec3 getMax() const
+	{
+		return m_bounds[1];
+	}
+
+	bool isEmpty() const
 	{
 		bool result = false;
 		for (int cpt = 0; cpt < 3; ++cpt)
@@ -34,26 +44,18 @@ public :
 		return result;
 	}
 
-	// SET
-
-	void set(const Sphere &s)
-	{
-		m_bounds[0] = s.center() - glm::vec3(s.radius());
-		m_bounds[1] = s.center() + glm::vec3(s.radius());
-	}
-
 	// UPDATE
-	void update(const Sphere &s)
+	void update(const AABB &aabb)
 	{
-		m_bounds[0] = getMin(m_bounds[0], s.center() - glm::vec3(s.radius()));
-		m_bounds[1] = getMax(m_bounds[1], s.center() + glm::vec3(s.radius()));;
+		m_bounds[0] = createMin(m_bounds[0], aabb.getMin());
+		m_bounds[1] = createMax(m_bounds[1], aabb.getMax());
 	}
 
 	// TODO : add inline ?
 	// Compare to Lamarche version and Peter Shirley version
 	bool intersect(const Ray &r, float tmin, float tmax, float &entryT, float &exitT) const
 	{
-		float tmin, tmax, tymin, tymax, tzmin, tzmax;
+		float tymin, tymax, tzmin, tzmax;
 
 		tmin = (m_bounds[r.sign().x].x - r.origin().x) * r.invDirection().x;
 		tmax = (m_bounds[1 - r.sign().x].x - r.origin().x) * r.invDirection().x;
@@ -88,7 +90,7 @@ private :
 	// UTILITIES
 
 	// TODO : Find better name
-	glm::vec3 getMin(glm::vec3 const & v1, glm::vec3 const & v2) const
+	glm::vec3 createMin(glm::vec3 const & v1, glm::vec3 const & v2) const
 	{
 		glm::vec3 result;
 		for (int cpt = 0; cpt < 3; ++cpt)
@@ -99,7 +101,7 @@ private :
 	}
 
 	// TODO : Find better name
-	glm::vec3 getMax(glm::vec3 const & v1, glm::vec3 const & v2) const
+	glm::vec3 createMax(glm::vec3 const & v1, glm::vec3 const & v2) const
 	{
 		glm::vec3 result;
 		for (int cpt = 0; cpt < 3; ++cpt)

@@ -2,6 +2,8 @@
 
 #include "Hitable.h"
 #include "Stats.h"
+#include "AABB.h"
+
 
 #include <memory>
 
@@ -16,13 +18,18 @@ public :
 	Sphere(const glm::vec3& center, const float& radius, std::shared_ptr<Material> mat) : m_center(center), m_radius(radius), m_mat(mat) {}
 	~Sphere() {}
 
-	glm::vec3 center() const { return m_center; }
+	glm::vec3 center() const override { return m_center; }
 	float radius() const { return m_radius; }
 	// TODO : Check if reference is fine
 	void setCenter(const glm::vec3& center) { m_center = center; }
 	void setRadius(const float radius) { m_radius = radius; }
 
-	bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const
+	AABB getAABB() const override
+	{
+		return AABB(m_center - glm::vec3(m_radius), m_center + glm::vec3(m_radius));
+	}
+
+	bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const override
 	{
 		// Add to global variable for stats
 		numberOfRaySphereTest += 1;

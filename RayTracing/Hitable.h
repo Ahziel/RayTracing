@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Ray.h"
 #include <memory>
 
 // Check why it's needed
 class Material;
+class AABB;
 
 // TODO : Put this struct in Ray
 struct HitRecord
@@ -24,4 +24,6 @@ class Hitable
 {
 public : 
 	virtual bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const = 0;
+	virtual AABB getAABB() const = 0;
+	virtual glm::vec3 center() const = 0;
 };

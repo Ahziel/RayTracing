@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Hitable.h"
-
 #include "Stats.h"
+#include "AABB.h"
+
 
 // TODO : Find a proper way to handle moving objects
 
@@ -15,6 +16,18 @@ public :
 	MovingSphere(const glm::vec3& center0, const glm::vec3& center1, const float& time0, const float& time1, const float& radius, std::shared_ptr<Material> mat)
 		: m_center0(center0), m_center1(center1), m_time0(time0), m_time1(time1), m_radius(radius), m_mat(mat) {}
 	~MovingSphere() {}
+
+	glm::vec3 center() const override
+	{
+		return (m_center0 + m_center1) / 2.0f;
+	}
+
+	AABB getAABB() const
+	{
+		AABB aabb(m_center0 - glm::vec3(m_radius), m_center0 + glm::vec3(m_radius));
+		aabb.update(AABB(m_center1 - glm::vec3(m_radius), m_center1 + glm::vec3(m_radius)));
+		return aabb;
+	}
 
 	virtual bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const override
 	{
