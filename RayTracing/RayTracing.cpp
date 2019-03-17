@@ -1,9 +1,11 @@
 #include "stdafx.h"
 
 #include "Ray.h"
-#include "HitableList.h"
 #include "Camera.h"
 #include "PPM.h"
+
+#include "HitableList.h"
+#include "BVHNode.h"
 
 #include "Sphere.h"
 #include "MovingSphere.h"
@@ -54,7 +56,7 @@ glm::vec3 color(const Ray& r, std::unique_ptr<Hitable> &world, int depth)
 		Ray scattered;
 		glm::vec3 attenuation;
 
-		if (depth < 50.0f && rec.matPtr->scatter(r, rec, attenuation, scattered))
+		if (depth < 10 && rec.matPtr->scatter(r, rec, attenuation, scattered))
 		{
 			return attenuation * color(scattered, world, depth + 1);
 		}
@@ -111,31 +113,32 @@ std::unique_ptr<Hitable> finalRandomScene()
 	// TODO : find a better way to do this
 	numberOfGeometry = list.size();
 
-	return std::make_unique<HitableList>(list);
+	return std::make_unique<BVHNode>(list);
 }
+
 
 int main() {
 
 	resetStat();
 
 	// Set size
-	int width = 600;
-	int height = 300;
-	int loopAA = 15;
+	int width = 200;
+	int height = 100;
+	int loopAA = 1;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
 
 	PPM image(width, height);
 
-	/*std::vector<std::shared_ptr<Hitable>> list;
+	std::vector<std::shared_ptr<Hitable>> list;
 	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.3f, 0.3f))));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.8f, 0.0f))));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Metal>(glm::vec3(0.8f, 0.6f, 0.2f), 0.3f)));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Dielectric>(1.5f)));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));*/
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));
 
-	//std::unique_ptr<Hitable>  world = std::make_unique<HitableList>(list);
+	//std::unique_ptr<Hitable>  world = std::make_unique<BVHNode>(list);
 	std::unique_ptr<Hitable>  world(finalRandomScene());
 
 	// Camera information

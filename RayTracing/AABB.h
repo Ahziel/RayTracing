@@ -14,8 +14,8 @@ public :
 	AABB()
 	{
 		float	inf = std::numeric_limits<float>::infinity();
-		m_bounds[0] = glm::vec3(-inf);
-		m_bounds[1] = glm::vec3(inf);
+		m_bounds[0] = glm::vec3(inf);
+		m_bounds[1] = glm::vec3(-inf);
 	}
 
 	AABB(const glm::vec3 &min, const glm::vec3 &max)
