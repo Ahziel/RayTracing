@@ -80,7 +80,7 @@ public:
 				bool interLeft = m_leftChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTL, exitTL);
 				bool interRight = m_rightChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTR, exitTR);
 
-				hitAnything
+				hitAnything = m_leftChild->intersect(r, t_min, t_max) || m_rightChild->intersect(r, t_min, t_max);
 
 				/*if (interLeft && interRight)
 				{
