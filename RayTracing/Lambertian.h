@@ -18,10 +18,10 @@ public :
 	Lambertian(const glm::vec3& albedo) : m_albedo(albedo) {}
 	~Lambertian() {}
 
-	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const override
+	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const override
 	{
-		glm::vec3 target = rec.P + rec.N + randomUnitSphere();
-		scattered = Ray(rec.P, target - rec.P, in.time());
+		glm::vec3 target = in.hitRec().P + in.hitRec().N + randomUnitSphere();
+		scattered = CastedRay(in.hitRec().P, target - in.hitRec().P, in.time());
 		attenuation = m_albedo;
 		return true;
 	}

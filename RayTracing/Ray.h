@@ -18,13 +18,13 @@ public :
 	}
 	~Ray() {}
 
-	glm::vec3 origin() const { return m_origin; }
-	glm::vec3 direction() const { return m_direction; }
-	glm::vec3 invDirection() const { return m_invDirection; }
-	glm::ivec3 sign() const { return m_sign; }
-	float time() const { return m_time; }
+	virtual glm::vec3 origin() const { return m_origin; }
+	virtual glm::vec3 direction() const { return m_direction; }
+	virtual glm::vec3 invDirection() const { return m_invDirection; }
+	virtual glm::ivec3 sign() const { return m_sign; }
+	virtual float time() const { return m_time; }
 
-	glm::vec3 pointAtParameter(const float t) const { return m_origin + m_direction * t; }
+	virtual glm::vec3 pointAtParameter(const float t) const { return m_origin + m_direction * t; }
 
 private :
 

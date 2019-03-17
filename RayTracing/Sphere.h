@@ -29,7 +29,7 @@ public :
 		return AABB(m_center - glm::vec3(m_radius), m_center + glm::vec3(m_radius));
 	}
 
-	bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const override
+	bool intersect(CastedRay& r, float t_min, float t_max) const override
 	{
 		// Add to global variable for stats
 		numberOfRaySphereTest += 1;
@@ -50,10 +50,15 @@ public :
 			float temp = (-b - sqrt(discriminant)) / (2.0f * a);
 			if (temp < t_max && temp > t_min )
 			{
-				rec.t = temp;
-				rec.P = r.pointAtParameter(temp);
-				rec.N = normalize(rec.P - m_center);
-				rec.matPtr = m_mat;
+				if (temp < r.hitRec().t)
+				{
+					HitRecord rec;
+					rec.t = temp;
+					rec.P = r.pointAtParameter(temp);
+					rec.N = normalize(rec.P - m_center);
+					rec.matPtr = m_mat;
+					r.setHitRec(rec);
+				}
 
 				// Add to global variable for stats
 				numberOfRaySphereIntersection += 1;
@@ -63,10 +68,15 @@ public :
 			temp = (-b + sqrt(discriminant)) / (2.0f * a);
 			if (temp < t_max && temp > t_min)
 			{
-				rec.t = temp;
-				rec.P = r.pointAtParameter(temp);
-				rec.N = normalize(rec.P - m_center);
-				rec.matPtr = m_mat;
+				if (temp < r.hitRec().t)
+				{
+					HitRecord rec;
+					rec.t = temp;
+					rec.P = r.pointAtParameter(temp);
+					rec.N = normalize(rec.P - m_center);
+					rec.matPtr = m_mat;
+					r.setHitRec(rec);
+				}
 				
 				// Add to global variable for stats
 				numberOfRaySphereIntersection += 1;

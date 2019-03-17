@@ -22,6 +22,12 @@
     <Filter Include="Header Files\Utilities">
       <UniqueIdentifier>{0d2930df-fc73-4b55-966e-c4298659b800}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Ray">
+      <UniqueIdentifier>{4f232b0b-3696-4b8c-80bd-978f07f0a4a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Structures">
+      <UniqueIdentifier>{c026383b-a7d7-495d-a342-6929d7156768}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -37,12 +43,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hitable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HitableList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dielectric.h">
@@ -66,14 +66,26 @@
     <ClInclude Include="PPM.h">
       <Filter>Header Files\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="AABB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MovingSphere.h">
       <Filter>Header Files\Primitive</Filter>
     </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Header Files\Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="CastedRay.h">
+      <Filter>Header Files\Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="HitRecord.h">
+      <Filter>Header Files\Ray</Filter>
+    </ClInclude>
     <ClInclude Include="BVHNode.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Header Files\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="HitableList.h">
+      <Filter>Header Files\Structures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

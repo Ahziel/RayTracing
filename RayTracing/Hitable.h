@@ -5,25 +5,12 @@
 // Check why it's needed
 class Material;
 class AABB;
-
-// TODO : Put this struct in Ray
-struct HitRecord
-{
-	// t value for the equation of the Ray
-	float t;
-	// Point that have been hit
-	glm::vec3 P;
-	// Normal of the hit point
-	glm::vec3 N;
-	// Material found
-	// TODO : Change it for a smart pointer
-	std::shared_ptr<Material> matPtr;
-};
+class CastedRay;
 
 class Hitable
 {
 public : 
-	virtual bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const = 0;
+	virtual bool intersect(CastedRay& r, float t_min, float t_max) const = 0;
 	virtual AABB getAABB() const = 0;
 	virtual glm::vec3 center() const = 0;
 };

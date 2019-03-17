@@ -34,21 +34,19 @@ public:
 		return aabb;
 	}
 
-	virtual bool intersect(const Ray &r, float t_min, float t_max, HitRecord &rec) const override;
+	virtual bool intersect(CastedRay &r, float t_min, float t_max) const override;
 	// TODO : check if vector is the best
 	std::vector<std::shared_ptr<Hitable>> m_listHitables;
 };
 
-bool HitableList::intersect(const Ray &r, float t_min, float t_max, HitRecord &rec) const {
-	HitRecord tempRec;
+bool HitableList::intersect(CastedRay &r, float t_min, float t_max) const {
 	bool hitAnything = false;
 	float closestSoFar = t_max;
 	for (unsigned int i = 0; i < m_listHitables.size(); i++)
 	{
-		if (m_listHitables[i]->intersect(r, t_min, closestSoFar, tempRec)) {
+		if (m_listHitables[i]->intersect(r, t_min, closestSoFar)) {
 			hitAnything = true;
-			closestSoFar = tempRec.t;
-			rec = tempRec;
+			closestSoFar = r.hitRec().t;
 		}
 	}
 	return hitAnything;

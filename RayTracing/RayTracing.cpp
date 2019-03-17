@@ -1,6 +1,10 @@
+#pragma once
+
 #include "stdafx.h"
 
 #include "Ray.h"
+#include "CastedRay.h"
+
 #include "Camera.h"
 #include "PPM.h"
 
@@ -47,18 +51,19 @@ void printStat()
 }
 
 // TODO : Check to change this pointer for a smartPointer ?
-glm::vec3 color(const Ray& r, std::unique_ptr<Hitable> &world, int depth)
+glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 {
-	HitRecord rec;
-
-	if (world->intersect(r, 0.001f, std::numeric_limits<float>::max(), rec))
+	if (world->intersect(r, 0.001f, std::numeric_limits<float>::max()))
 	{
-		Ray scattered;
+		CastedRay scattered;
 		glm::vec3 attenuation;
 
-		if (depth < 5 && rec.matPtr->scatter(r, rec, attenuation, scattered))
+		if (depth < 5 && r.hitRec().matPtr != nullptr)
 		{
-			return attenuation * color(scattered, world, depth + 1);
+			if (r.hitRec().matPtr->scatter(r, attenuation, scattered))
+			{
+				return attenuation * color(scattered, world, depth + 1);
+			}
 		}
 		else
 		{
@@ -122,9 +127,9 @@ int main() {
 	resetStat();
 
 	// Set size
-	int width = 600;
-	int height = 300;
-	int loopAA = 30;
+	int width = 400;
+	int height = 200;
+	int loopAA = 1;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -133,7 +138,7 @@ int main() {
 
 	std::vector<std::shared_ptr<Hitable>> list;
 	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.3f, 0.3f))));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.8f, 0.0f))));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<Metal>(glm::vec3(0.8f, 0.8f, 0.0f), 0.3f)));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Metal>(glm::vec3(0.8f, 0.6f, 0.2f), 0.3f)));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Dielectric>(1.5f)));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));
@@ -162,7 +167,7 @@ int main() {
 				float u = float(i + dis(gen)) / float(width);
 				float v = float(height - j + dis(gen)) / float(height);
 
-				Ray r = cam.generateRay(u, v);
+				CastedRay r = cam.generateRay(u, v);
 				col += color(r, world, 0);
 			}
 

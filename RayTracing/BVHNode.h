@@ -62,10 +62,9 @@ public:
 		return m_box;
 	}
 
-	bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const override
+	bool intersect(CastedRay& r, float t_min, float t_max) const override
 	{
 		float entryT, exitT;
-		HitRecord leftRec, rightRec;
 		bool hitAnything = false;
 		if (!m_box.intersect(r, t_min, t_max, entryT, exitT))
 		{
@@ -77,65 +76,47 @@ public:
 			{
 				float entryTL, exitTL;
 				float entryTR, exitTR;
-				bool hitLeft = false;
-				bool hitRight =false;
 
 				bool interLeft = m_leftChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTL, exitTL);
 				bool interRight = m_rightChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTR, exitTR);
 
-				hitLeft = m_leftChild->intersect(r, t_min, t_max, leftRec);
-				hitRight = m_rightChild->intersect(r, t_min, t_max, rightRec);
+				hitAnything
 
-				/*if (entryTL < entryTR) {
-					hitLeft = m_leftChild->intersect(r, t_min, t_max, leftRec);
-					if (leftRec.t > entryTR)
-					{
-						hitRight = m_rightChild->intersect(r, t_min, t_max, rightRec);
+				/*if (interLeft && interRight)
+				{
+					if (entryTL < entryTR) {
+						hitAnything = m_leftChild->intersect(r, t_min, t_max);
+						if (r.hitRec().t > entryTR)
+						{
+							hitAnything = hitAnything || m_rightChild->intersect(r, t_min, t_max);
+						}
+					}
+					else {
+						hitAnything = m_rightChild->intersect(r, t_min, t_max);
+						if (r.hitRec().t > entryTL)
+						{
+							hitAnything = hitAnything || m_leftChild->intersect(r, t_min, t_max);
+						}
 					}
 				}
-				else {
-					hitRight = m_rightChild->intersect(r, t_min, t_max, rightRec);
-					if (rightRec.t > entryTL)
-					{
-						hitLeft = m_leftChild->intersect(r, t_min, t_max, leftRec);
-					}
+				else if (interLeft)
+				{
+					hitAnything = m_leftChild->intersect(r, t_min, t_max);
+				}
+				else if (interRight)
+				{
+					hitAnything = m_rightChild->intersect(r, t_min, t_max);
 				}*/
-
-
-				if (hitLeft && hitRight)
-				{
-					if (leftRec.t < rightRec.t)
-					{
-						rec = leftRec;
-					}
-					else
-					{
-						rec = rightRec;
-					}
-					hitAnything = true;
-				}
-				else if (hitLeft)
-				{
-					rec = leftRec;
-					hitAnything = true;
-				}
-				else if (hitRight)
-				{
-					rec = rightRec;
-					hitAnything = true;
-				}
 
 			}
 			else
 			{
-				HitRecord tempRec;
 				float closestSoFar = t_max;
 				for (auto& s : m_hitables)
 				{
-					if (s->intersect(r, t_min, closestSoFar, tempRec)) {
+					if (s->intersect(r, t_min, closestSoFar)) {
 						hitAnything = true;
-						closestSoFar = tempRec.t;
-						rec = tempRec;
+						closestSoFar = r.hitRec().t;
 					}
 				}
 			}

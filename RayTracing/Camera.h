@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Ray.h"
+#include "CastedRay.h"
 #include <random>
 //Change this class to use matrix
 
@@ -44,12 +44,12 @@ public:
 	}
 	~Camera() {}
 
-	Ray generateRay(float u, float v) const
+	CastedRay generateRay(float u, float v) const
 	{
 		glm::vec3 rd = m_lensRadius * randomInUnitDisk();
 		glm::vec3 offset = m_u * rd.x + m_v * rd.y;
 		float time = m_time0 + dis(gen) * (m_time1 - m_time0);
-		return Ray(m_origin + offset, m_lowerLeftCorner + u * m_horizontal + v * m_vertical - m_origin - offset, time);
+		return CastedRay(m_origin + offset, m_lowerLeftCorner + u * m_horizontal + v * m_vertical - m_origin - offset, time);
 	}
 
 	// Basis

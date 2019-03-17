@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Hitable.h"
-#include "Ray.h"
+#include "CastedRay.h"
 
 #include <limits>
 #include <algorithm>
@@ -54,6 +54,37 @@ public :
 	// TODO : add inline ?
 	// Compare to Lamarche version and Peter Shirley version
 	bool intersect(const Ray &r, float tmin, float tmax, float &entryT, float &exitT) const
+	{
+		float tymin, tymax, tzmin, tzmax;
+
+		tmin = (m_bounds[r.sign().x].x - r.origin().x) * r.invDirection().x;
+		tmax = (m_bounds[1 - r.sign().x].x - r.origin().x) * r.invDirection().x;
+		tymin = (m_bounds[r.sign().y].y - r.origin().y) * r.invDirection().y;
+		tymax = (m_bounds[1 - r.sign().y].y - r.origin().y) * r.invDirection().y;
+
+		if ((tmin > tymax) || (tymin > tmax))
+			return false;
+		if (tymin > tmin)
+			tmin = tymin;
+		if (tymax < tmax)
+			tmax = tymax;
+
+		tzmin = (m_bounds[r.sign().z].z - r.origin().z) * r.invDirection().z;
+		tzmax = (m_bounds[1 - r.sign().z].z - r.origin().z) * r.invDirection().z;
+
+		if ((tmin > tzmax) || (tzmin > tmax))
+			return false;
+		if (tzmin > tmin)
+			tmin = tzmin;
+		if (tzmax < tmax)
+			tmax = tzmax;
+
+		entryT = tmin;
+		exitT = tmax;
+		return true;
+	}
+
+	bool intersect(const CastedRay &r, float tmin, float tmax, float &entryT, float &exitT) const
 	{
 		float tymin, tymax, tzmin, tzmax;
 

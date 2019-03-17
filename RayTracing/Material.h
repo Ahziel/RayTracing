@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Hitable.h"
-#include "Ray.h"
 #include <random>
+
+#include "Hitable.h"
+#include "CastedRay.h"
 
 // TODO : Change for a real hemisphere sampler see :
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/global-illumination-path-tracing/global-illumination-path-tracing-practical-implementation
@@ -50,5 +51,5 @@ bool refract(const glm::vec3 &v, const glm::vec3 &n, float niOverNt, glm::vec3 &
 class Material
 {
 public:
-	virtual bool scatter(const Ray &in, HitRecord &rec, glm::vec3 &attenuation, Ray &scattered) const = 0;
+	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const = 0;
 };
