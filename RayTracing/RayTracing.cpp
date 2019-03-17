@@ -56,7 +56,7 @@ glm::vec3 color(const Ray& r, std::unique_ptr<Hitable> &world, int depth)
 		Ray scattered;
 		glm::vec3 attenuation;
 
-		if (depth < 10 && rec.matPtr->scatter(r, rec, attenuation, scattered))
+		if (depth < 5 && rec.matPtr->scatter(r, rec, attenuation, scattered))
 		{
 			return attenuation * color(scattered, world, depth + 1);
 		}
@@ -90,7 +90,7 @@ std::unique_ptr<Hitable> finalRandomScene()
 				{
 					//list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
 					// TO REMOVE
-					list.push_back(std::make_shared<MovingSphere>(center, center + glm::vec3(0.0f, dis(gen) * 0.5f, 0.0f), 0.0f, 1.0f, 0.2f, 
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, 
 						std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
 				}
 				else if (chooseMat < 0.95f) // Metal material
@@ -122,9 +122,9 @@ int main() {
 	resetStat();
 
 	// Set size
-	int width = 200;
-	int height = 100;
-	int loopAA = 1;
+	int width = 600;
+	int height = 300;
+	int loopAA = 30;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;

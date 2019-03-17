@@ -81,6 +81,7 @@ public :
 
 		entryT = tmin;
 		exitT = tmax;
+		return true;
 	}
 
 private :

@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 #include "Hitable.h"
 #include "AABB.h"
@@ -51,42 +52,6 @@ public:
 
 	~BVHNode(){}
 
-	/*void init(const std::vector<std::shared_ptr<Hitable>> &hitables, int sizeSubdiv = 32)
-	{
-		m_box = AABB();
-
-		for (auto& s : hitables) {
-			m_box.update(s->getAABB());
-		}
-
-		if (!hitables.size() > m_sizeSubdiv)
-		{
-			m_hitables = hitables;
-		}
-		else
-		{
-			std::random_device rd;     // only used once to initialise (seed) engine
-			std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-			std::uniform_int_distribution<int> uni(0, 2); // guaranteed unbiased
-
-			int axis = uni(rng);
-
-			// Sort on a axis unsing lambda function
-			std::sort(hitables.begin(), hitables.end(),
-				[axis](const std::shared_ptr<Hitable> & a, const std::shared_ptr<Hitable> & b) -> bool
-			{
-				return a->center()[axis] > b->center()[axis];
-			});
-
-			std::vector<std::shared_ptr<Hitable>> leftList(hitables.begin(), hitables.begin() + hitables.size() / 2);
-			std::vector<std::shared_ptr<Hitable>> rightList(hitables.begin() + hitables.size() / 2, hitables.end());
-
-
-			m_leftChild = std::make_unique<BVHNode>(leftList);
-			m_rightChild = std::make_unique<BVHNode>(rightList);
-		}
-	}*/
-
 	glm::vec3 center() const override
 	{
 		return (m_box.getMin() + m_box.getMax()) / 2.0f;
@@ -118,7 +83,10 @@ public:
 				bool interLeft = m_leftChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTL, exitTL);
 				bool interRight = m_rightChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTR, exitTR);
 
-				if (entryTL < entryTR) {
+				hitLeft = m_leftChild->intersect(r, t_min, t_max, leftRec);
+				hitRight = m_rightChild->intersect(r, t_min, t_max, rightRec);
+
+				/*if (entryTL < entryTR) {
 					hitLeft = m_leftChild->intersect(r, t_min, t_max, leftRec);
 					if (leftRec.t > entryTR)
 					{
@@ -131,7 +99,7 @@ public:
 					{
 						hitLeft = m_leftChild->intersect(r, t_min, t_max, leftRec);
 					}
-				}
+				}*/
 
 
 				if (hitLeft && hitRight)
