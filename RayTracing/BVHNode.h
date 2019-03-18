@@ -80,7 +80,7 @@ public:
 				bool interLeft = m_leftChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTL, exitTL);
 				bool interRight = m_rightChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTR, exitTR);
 
-				hitAnything = m_leftChild->intersect(r, t_min, t_max) || m_rightChild->intersect(r, t_min, t_max);
+				hitAnything = m_leftChild->intersect(r, t_min, t_max) | m_rightChild->intersect(r, t_min, t_max);
 
 				/*if (interLeft && interRight)
 				{
@@ -95,23 +95,24 @@ public:
 						hitAnything = m_rightChild->intersect(r, t_min, t_max);
 						if (r.hitRec().t > entryTL)
 						{
-							hitAnything = hitAnything || m_leftChild->intersect(r, t_min, t_max);
+						hitAnything = hitAnything || m_leftChild->intersect(r, t_min, t_max);
 						}
 					}
 				}
 				else if (interLeft)
 				{
-					hitAnything = m_leftChild->intersect(r, t_min, t_max);
+				hitAnything = m_leftChild->intersect(r, t_min, t_max);
 				}
 				else if (interRight)
 				{
-					hitAnything = m_rightChild->intersect(r, t_min, t_max);
+				hitAnything = m_rightChild->intersect(r, t_min, t_max);
 				}*/
 
 			}
 			else
 			{
 				float closestSoFar = t_max;
+
 				for (auto& s : m_hitables)
 				{
 					if (s->intersect(r, t_min, closestSoFar)) {

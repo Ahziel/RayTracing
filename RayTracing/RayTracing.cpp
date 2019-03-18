@@ -58,7 +58,7 @@ glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 		CastedRay scattered;
 		glm::vec3 attenuation;
 
-		if (depth < 5 && r.hitRec().matPtr != nullptr)
+		if (depth < 10 && r.hitRec().matPtr != nullptr)
 		{
 			if (r.hitRec().matPtr->scatter(r, attenuation, scattered))
 			{
@@ -118,7 +118,7 @@ std::unique_ptr<Hitable> finalRandomScene()
 	// TODO : find a better way to do this
 	numberOfGeometry = list.size();
 
-	return std::make_unique<BVHNode>(list);
+	return std::make_unique<HitableList>(list);
 }
 
 
@@ -127,9 +127,9 @@ int main() {
 	resetStat();
 
 	// Set size
-	int width = 400;
-	int height = 200;
-	int loopAA = 1;
+	int width = 200;
+	int height = 100;
+	int loopAA = 10;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
