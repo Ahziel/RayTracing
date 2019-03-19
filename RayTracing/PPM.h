@@ -36,9 +36,9 @@ public:
 
 		ofs << "P3\n" << m_width << " " << m_height << "\n255\n";
 
-		for (unsigned int j = 0; j < m_height; j++)
+		for (int j = 0; j < m_height; j++)
 		{
-			for (unsigned int i = 0; i < m_width; i++)
+			for (int i = 0; i < m_width; i++)
 			{
 				glm::ivec3 pixel = m_pixels[j * m_width + i];
 

@@ -45,8 +45,8 @@ public:
 			std::vector<std::shared_ptr<Hitable>> rightList(hitables.begin() + hitables.size() / 2, hitables.end());
 
 
-			m_leftChild = std::make_unique<BVHNode>(leftList);
-			m_rightChild = std::make_unique<BVHNode>(rightList);
+			m_leftChild = std::make_shared<BVHNode>(leftList);
+			m_rightChild = std::make_shared<BVHNode>(rightList);
 		}
 	}
 
@@ -80,22 +80,22 @@ public:
 				bool interLeft = m_leftChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTL, exitTL);
 				bool interRight = m_rightChild->getAABB().intersect(r, 0, std::numeric_limits<float>::max(), entryTR, exitTR);
 
-				hitAnything = m_leftChild->intersect(r, t_min, t_max) | m_rightChild->intersect(r, t_min, t_max);
+				
 
-				/*if (interLeft && interRight)
+				if (interLeft && interRight)
 				{
 					if (entryTL < entryTR) {
 						hitAnything = m_leftChild->intersect(r, t_min, t_max);
 						if (r.hitRec().t > entryTR)
 						{
-							hitAnything = hitAnything || m_rightChild->intersect(r, t_min, t_max);
+							hitAnything = hitAnything | m_rightChild->intersect(r, t_min, t_max);
 						}
 					}
 					else {
 						hitAnything = m_rightChild->intersect(r, t_min, t_max);
 						if (r.hitRec().t > entryTL)
 						{
-						hitAnything = hitAnything || m_leftChild->intersect(r, t_min, t_max);
+						hitAnything = hitAnything | m_leftChild->intersect(r, t_min, t_max);
 						}
 					}
 				}
@@ -106,7 +106,7 @@ public:
 				else if (interRight)
 				{
 				hitAnything = m_rightChild->intersect(r, t_min, t_max);
-				}*/
+				}
 
 			}
 			else
@@ -127,8 +127,9 @@ public:
 
 private :
 
-	std::unique_ptr<BVHNode> m_leftChild;
-	std::unique_ptr<BVHNode> m_rightChild;
+	// Maybe unique ? I tried that for multithread TOCHECK
+	std::shared_ptr<BVHNode> m_leftChild;
+	std::shared_ptr<BVHNode> m_rightChild;
 	std::vector<std::shared_ptr<Hitable>> m_hitables;
 	int m_sizeSubdiv;
 	AABB m_box;

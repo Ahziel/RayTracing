@@ -28,7 +28,7 @@ public :
 
 	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const override
 	{
-		glm::vec3 reflected = reflect(normalize(in.direction()), in.hitRec().N);
+		glm::vec3 reflected = reflect(in.direction(), in.hitRec().N);
 		scattered = CastedRay(in.hitRec().P, reflected + m_fuzz * randomUnitSphere(), in.time());
 		attenuation = m_albedo;
 		return (glm::dot(scattered.direction(), in.hitRec().N) > 0.0f);

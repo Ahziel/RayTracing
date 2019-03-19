@@ -1,5 +1,6 @@
 #pragma once
 
+#include <omp.h>
 #include "stdafx.h"
 
 #include "Ray.h"
@@ -53,16 +54,17 @@ void printStat()
 // TODO : Check to change this pointer for a smartPointer ?
 glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 {
+	glm::vec3 col(0.0f);
 	if (world->intersect(r, 0.001f, std::numeric_limits<float>::max()))
 	{
 		CastedRay scattered;
-		glm::vec3 attenuation;
+		
 
-		if (depth < 10 && r.hitRec().matPtr != nullptr)
+		if (depth < 5 && r.hitRec().matPtr != nullptr)
 		{
-			if (r.hitRec().matPtr->scatter(r, attenuation, scattered))
+			if (r.hitRec().matPtr->scatter(r, col, scattered))
 			{
-				return attenuation * color(scattered, world, depth + 1);
+				col = col * color(scattered, world, depth + 1);
 			}
 		}
 		else
@@ -74,8 +76,9 @@ glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 	{
 		glm::vec3 unit_direction = glm::normalize(r.direction());
 		float t = 0.5f * (unit_direction.y + 1.0f);
-		return  glm::vec3(1.0f) *(1.0f - t) + glm::vec3(0.5f, 0.7f, 1.0f) * t;
+		col =  glm::vec3(1.0f) *(1.0f - t) + glm::vec3(0.5f, 0.7f, 1.0f) * t;
 	}
+	return col;
 }
 
 std::unique_ptr<Hitable> finalRandomScene()
@@ -118,7 +121,7 @@ std::unique_ptr<Hitable> finalRandomScene()
 	// TODO : find a better way to do this
 	numberOfGeometry = list.size();
 
-	return std::make_unique<HitableList>(list);
+	return std::make_unique<BVHNode>(list);
 }
 
 
@@ -127,9 +130,9 @@ int main() {
 	resetStat();
 
 	// Set size
-	int width = 200;
-	int height = 100;
-	int loopAA = 10;
+	int width = 600;
+	int height = 300;
+	int loopAA = 50;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -157,6 +160,7 @@ int main() {
 	// Start time of the rendering
 	auto start = std::chrono::system_clock::now();
 
+#pragma omp parallel for schedule(dynamic)
 	for (int j = 0; j < height; j++)
 	{
 		for (int i = 0; i < width; i++)
@@ -169,9 +173,12 @@ int main() {
 
 				CastedRay r = cam.generateRay(u, v);
 				col += color(r, world, 0);
+				
+				
 			}
 
 			col /= float(loopAA);
+			// gamma
 			col = glm::vec3(sqrt(col.x), sqrt(col.y), sqrt(col.z));
 
 			int red = int(255.99 * col.x);
