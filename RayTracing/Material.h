@@ -4,6 +4,7 @@
 
 #include "Hitable.h"
 #include "CastedRay.h"
+#include "Texture.h"
 
 // TODO : Change for a real hemisphere sampler see :
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/global-illumination-path-tracing/global-illumination-path-tracing-practical-implementation

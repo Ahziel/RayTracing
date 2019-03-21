@@ -45,8 +45,8 @@ public:
 			std::vector<std::shared_ptr<Hitable>> rightList(hitables.begin() + hitables.size() / 2, hitables.end());
 
 
-			m_leftChild = std::make_shared<BVHNode>(leftList);
-			m_rightChild = std::make_shared<BVHNode>(rightList);
+			m_leftChild = std::make_unique<BVHNode>(leftList);
+			m_rightChild = std::make_unique<BVHNode>(rightList);
 		}
 	}
 
@@ -128,8 +128,8 @@ public:
 private :
 
 	// Maybe unique ? I tried that for multithread TOCHECK
-	std::shared_ptr<BVHNode> m_leftChild;
-	std::shared_ptr<BVHNode> m_rightChild;
+	std::unique_ptr<BVHNode> m_leftChild;
+	std::unique_ptr<BVHNode> m_rightChild;
 	std::vector<std::shared_ptr<Hitable>> m_hitables;
 	int m_sizeSubdiv;
 	AABB m_box;

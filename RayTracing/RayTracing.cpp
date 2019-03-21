@@ -18,6 +18,8 @@
 #include "Lambertian.h"
 #include "Metal.h"
 #include "Dielectric.h"
+#include "ConstantTexture.h"
+#include "CheckerTexture.h"
 
 #include "Stats.h"
 
@@ -81,10 +83,25 @@ glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 	return col;
 }
 
+
+std::unique_ptr<Hitable> basicScene()
+{
+	std::vector<std::shared_ptr<Hitable>> list;
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.8f, 0.3f, 0.3f)))));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<Metal>(glm::vec3(0.8f, 0.8f, 0.0f), 0.3f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Metal>(glm::vec3(0.8f, 0.6f, 0.2f), 0.3f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Dielectric>(1.5f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));
+
+	return std::make_unique<BVHNode>(list);
+}
+
 std::unique_ptr<Hitable> finalRandomScene()
 {
 	std::vector<std::shared_ptr<Hitable> > list;
-	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -1000.0f, 0.0f), 1000, std::make_shared<Lambertian>(glm::vec3(0.5f, 0.5f, 0.5f))));
+
+	auto checker = std::make_shared<CheckerTexture>(std::make_shared<ConstantTexture>(glm::vec3(0.2f, 0.3f, 0.1f)), std::make_shared<ConstantTexture>(glm::vec3(0.9f, 0.9f, 0.9f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -1000.0f, 0.0f), 1000, std::make_shared<Lambertian>(checker)));
 
 	for (int a = -11; a < 11; a++)
 	{
@@ -99,7 +116,7 @@ std::unique_ptr<Hitable> finalRandomScene()
 					//list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
 					// TO REMOVE
 					list.push_back(std::make_shared<Sphere>(center, 0.2f, 
-						std::make_shared<Lambertian>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)))));
+						std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen))))));
 				}
 				else if (chooseMat < 0.95f) // Metal material
 				{
@@ -115,7 +132,7 @@ std::unique_ptr<Hitable> finalRandomScene()
 	}
 
 	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, std::make_shared<Dielectric>(1.5f)));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(-4.0f, 1.0f, 0.0f), 1.0f, std::make_shared<Lambertian>(glm::vec3(0.4f, 0.2f, 0.1f))));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(-4.0f, 1.0f, 0.0f), 1.0f, std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.4f, 0.2f, 0.1f)))));
 	list.push_back(std::make_shared<Sphere>(glm::vec3(4.0, 1.0f, 0.0f), 1.0f, std::make_shared<Metal>(glm::vec3(0.7f, 0.6f, 0.5f), 0.0f)));
 
 	// TODO : find a better way to do this
@@ -124,6 +141,17 @@ std::unique_ptr<Hitable> finalRandomScene()
 	return std::make_unique<BVHNode>(list);
 }
 
+std::unique_ptr<Hitable> twoSphere()
+{
+	auto checker = std::make_shared<CheckerTexture>(std::make_shared<ConstantTexture>(glm::vec3(0.2f, 0.3f, 0.1f)), std::make_shared<ConstantTexture>(glm::vec3(0.9f, 0.9f, 0.9f)));
+
+	std::vector<std::shared_ptr<Hitable> > list;
+
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -10.0f, 0.0f), 10, std::make_shared<Lambertian>(checker)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 10.0f, 0.0f), 10, std::make_shared<Lambertian>(checker)));
+
+	return std::make_unique<BVHNode>(list);
+}
 
 int main() {
 
@@ -132,22 +160,16 @@ int main() {
 	// Set size
 	int width = 600;
 	int height = 300;
-	int loopAA = 50;
+	int loopAA = 100;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
 
 	PPM image(width, height);
 
-	std::vector<std::shared_ptr<Hitable>> list;
-	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Lambertian>(glm::vec3(0.8f, 0.3f, 0.3f))));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<Metal>(glm::vec3(0.8f, 0.8f, 0.0f), 0.3f)));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Metal>(glm::vec3(0.8f, 0.6f, 0.2f), 0.3f)));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<Dielectric>(1.5f)));
-	list.push_back(std::make_shared<Sphere>(glm::vec3(-1.0f, 0.0f, -1.0f), -0.45f, std::make_shared<Dielectric>(1.5f)));
-
 	//std::unique_ptr<Hitable>  world = std::make_unique<BVHNode>(list);
-	std::unique_ptr<Hitable>  world(finalRandomScene());
+	//std::unique_ptr<Hitable>  world(finalRandomScene());
+	std::unique_ptr<Hitable>  world(twoSphere());
 
 	// Camera information
 	glm::vec3 origin(13.0f, 2.0f, 3.0f);
@@ -160,7 +182,7 @@ int main() {
 	// Start time of the rendering
 	auto start = std::chrono::system_clock::now();
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(static)
 	for (int j = 0; j < height; j++)
 	{
 		for (int i = 0; i < width; i++)

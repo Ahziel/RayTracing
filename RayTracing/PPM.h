@@ -19,10 +19,10 @@ public:
 
 	PPM(unsigned int width, unsigned int height) : m_width(width), m_height(height), m_size(width * height)
 	{
-		m_pixels = new glm::ivec3[m_size];
+		m_pixels.resize(m_size);
 	}
 
-	~PPM() { delete[] m_pixels; }
+	~PPM() {}
 
 	void set(const int i, const int j, const glm::ivec3 color) { m_pixels[i * m_width + j] = color; }
 	glm::ivec3 get(const int i, const int j) const { return m_pixels[i * m_width + j]; }
@@ -69,7 +69,7 @@ private:
 	unsigned int m_size;
 
 	// Array for RGB value
-	glm::ivec3 *m_pixels;
+	std::vector<glm::ivec3> m_pixels;
 };
 
 
