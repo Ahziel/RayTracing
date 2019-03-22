@@ -5,6 +5,7 @@
 #include "Hitable.h"
 #include "CastedRay.h"
 #include "Texture.h"
+#include "Random.h"
 
 // TODO : Change for a real hemisphere sampler see :
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/global-illumination-path-tracing/global-illumination-path-tracing-practical-implementation
@@ -13,9 +14,6 @@
 // Maybe put it in another header file that I give to Material.h
 glm::vec3 randomUnitSphere()
 {
-	std::random_device rd;  //Will be used to obtain a seed for the random number engine
-	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	std::uniform_real_distribution<> dis(0.0, 1.0);
 
 	glm::vec3 P;
 	do {

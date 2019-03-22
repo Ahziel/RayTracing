@@ -28,6 +28,12 @@
     <Filter Include="Header Files\Structures">
       <UniqueIdentifier>{c026383b-a7d7-495d-a342-6929d7156768}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Textures">
+      <UniqueIdentifier>{7f7ca951-d50d-4089-a7c7-b245117d58dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Camera">
+      <UniqueIdentifier>{57d84271-dbfb-4fcc-a90c-a2d30f7a3e50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -37,12 +43,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hitable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dielectric.h">
@@ -87,14 +87,29 @@
     <ClInclude Include="HitableList.h">
       <Filter>Header Files\Structures</Filter>
     </ClInclude>
+    <ClInclude Include="Perlin.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitable.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Header Files\Materials</Filter>
+      <Filter>Header Files\Textures</Filter>
     </ClInclude>
     <ClInclude Include="ConstantTexture.h">
-      <Filter>Header Files\Materials</Filter>
+      <Filter>Header Files\Textures</Filter>
     </ClInclude>
     <ClInclude Include="CheckerTexture.h">
-      <Filter>Header Files\Materials</Filter>
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="NoiseTexture.h">
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header Files\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

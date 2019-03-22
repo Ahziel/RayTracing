@@ -8,6 +8,7 @@
 #include "Hitable.h"
 #include "AABB.h"
 
+
 class BVHNode : public Hitable
 {
 public:

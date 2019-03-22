@@ -2,12 +2,9 @@
 
 #include "CastedRay.h"
 #include <random>
-//Change this class to use matrix
 
-// Random - Need to replace
-std::random_device rd;  //Will be used to obtain a seed for the random number engine
-std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-std::uniform_real_distribution<> dis(0.0f, 1.0f);
+#include "Random.h"
+//Change this class to use matrix
 
 glm::vec3 randomInUnitDisk()
 {

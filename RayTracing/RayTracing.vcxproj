@@ -162,7 +162,10 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Metal.h" />
     <ClInclude Include="MovingSphere.h" />
+    <ClInclude Include="NoiseTexture.h" />
+    <ClInclude Include="Perlin.h" />
     <ClInclude Include="PPM.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Stats.h" />

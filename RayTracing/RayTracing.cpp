@@ -1,6 +1,9 @@
 #pragma once
 
+
+
 #include <omp.h>
+
 #include "stdafx.h"
 
 #include "Ray.h"
@@ -18,16 +21,17 @@
 #include "Lambertian.h"
 #include "Metal.h"
 #include "Dielectric.h"
+
 #include "ConstantTexture.h"
 #include "CheckerTexture.h"
+#include "NoiseTexture.h"
 
 #include "Stats.h"
+#include "Random.h"
 
 #include <iostream>
 #include <limits>
 #include <vector>
-#include <random>
-
 // For smart pointer
 #include <memory>
 // To check execution time
@@ -153,6 +157,18 @@ std::unique_ptr<Hitable> twoSphere()
 	return std::make_unique<BVHNode>(list);
 }
 
+std::unique_ptr<Hitable> twoPerlinSphere()
+{
+	auto perlinTex = std::make_shared<NoiseTexture>();
+
+	std::vector<std::shared_ptr<Hitable> > list;
+
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -1000.0f, 0.0f), 1000.0f, std::make_shared<Lambertian>(perlinTex)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 2.0f, 0.0f), 2.0f, std::make_shared<Lambertian>(perlinTex)));
+
+	return std::make_unique<BVHNode>(list);
+}
+
 int main() {
 
 	resetStat();
@@ -169,7 +185,8 @@ int main() {
 
 	//std::unique_ptr<Hitable>  world = std::make_unique<BVHNode>(list);
 	//std::unique_ptr<Hitable>  world(finalRandomScene());
-	std::unique_ptr<Hitable>  world(twoSphere());
+	//std::unique_ptr<Hitable>  world(twoSphere());
+	std::unique_ptr<Hitable>  world(twoPerlinSphere());
 
 	// Camera information
 	glm::vec3 origin(13.0f, 2.0f, 3.0f);
