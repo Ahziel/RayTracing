@@ -56,6 +56,8 @@ public :
 					rec.t = temp;
 					rec.P = r.pointAtParameter(temp);
 					rec.N = normalize(rec.P - m_center);
+					// TODO : Change uv function
+					getUV((rec.P - m_center) / m_radius, rec.u, rec.v);
 					rec.matPtr = m_mat;
 					r.setHitRec(rec);
 				}
@@ -74,6 +76,8 @@ public :
 					rec.t = temp;
 					rec.P = r.pointAtParameter(temp);
 					rec.N = normalize(rec.P - m_center);
+					// TODO : Change uv function
+					getUV((rec.P - m_center)/m_radius, rec.u, rec.v);
 					rec.matPtr = m_mat;
 					r.setHitRec(rec);
 				}
@@ -85,6 +89,15 @@ public :
 			}
 		}
 		return false;
+	}
+
+	// TODO : Change uv function
+	void getUV(const glm::vec3 &point, float &u, float &v) const
+	{
+		float phi = atan2(point.z, point.x);
+		float theta = asin(point.y);
+		u = 1 - (phi + 3.14159265359f) / (2 * 3.14159265359f);
+		v = (theta + 3.14159265359f / 2) / 3.14159265359f;
 	}
 
 private :

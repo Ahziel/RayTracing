@@ -15,6 +15,9 @@ struct HitRecord
 	glm::vec3 P;
 	// Normal of the hit point
 	glm::vec3 N;
+	// uv coordinate of the hit point
+	float u;
+	float v;
 	// Material found
 	std::shared_ptr<Material> matPtr;
 

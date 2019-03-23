@@ -22,7 +22,7 @@ public :
 	{
 		glm::vec3 target = in.hitRec().P + in.hitRec().N + randomUnitSphere();
 		scattered = CastedRay(in.hitRec().P, target - in.hitRec().P, in.time());
-		attenuation = m_albedo->getValue(0, 0, in.hitRec().P);
+		attenuation = m_albedo->getValue(in.hitRec().u , in.hitRec().v, in.hitRec().P);
 		return true;
 	}
 

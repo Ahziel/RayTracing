@@ -25,16 +25,18 @@
 #include "ConstantTexture.h"
 #include "CheckerTexture.h"
 #include "NoiseTexture.h"
+#include "ImageTexture.h"
 
 #include "Stats.h"
 #include "Random.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <iostream>
 #include <limits>
 #include <vector>
-// For smart pointer
 #include <memory>
-// To check execution time
 #include <chrono>
 #include <ctime>  
 #include <algorithm>
@@ -71,7 +73,7 @@ glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 		{
 			if (r.hitRec().matPtr->scatter(r, col, scattered))
 			{
-				col *=  color(scattered, world, depth + 1);
+				/*col *=  color(scattered, world, depth + 1);*/
 			}
 		}
 		else
@@ -81,9 +83,9 @@ glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 	}
 	else
 	{
-		glm::vec3 unit_direction = glm::normalize(r.direction());
+		/*glm::vec3 unit_direction = glm::normalize(r.direction());
 		float t = 0.5f * (unit_direction.y + 1.0f);
-		col =  glm::vec3(1.0f) *(1.0f - t) + glm::vec3(0.5f, 0.7f, 1.0f) * t;
+		col =  glm::vec3(1.0f) *(1.0f - t) + glm::vec3(0.5f, 0.7f, 1.0f) * t;*/
 	}
 	return col;
 }
@@ -170,6 +172,21 @@ std::unique_ptr<Hitable> twoPerlinSphere()
 	return std::make_unique<BVHNode>(list);
 }
 
+std::unique_ptr<Hitable> earth()
+{
+
+	int widthTex, heightTex, chanelTex;
+	unsigned char *tex_data = stbi_load("earthNight.jpg", &widthTex, &heightTex, &chanelTex, 0);
+	auto imgTex = std::make_shared<ImageTexture>(tex_data, widthTex, heightTex);
+
+	std::vector<std::shared_ptr<Hitable> > list;
+
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, 0.0f), 2.0f, std::make_shared<Lambertian>(imgTex)));
+	//list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, 0.0f), 2.0f, std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.8f, 0.3f, 0.3f)))));
+
+	return std::make_unique<BVHNode>(list);
+}
+
 int main() {
 
 	resetStat();
@@ -177,7 +194,7 @@ int main() {
 	// Set size
 	int width = 600;
 	int height = 300;
-	int loopAA = 50;
+	int loopAA = 5;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -187,7 +204,8 @@ int main() {
 	//std::unique_ptr<Hitable>  world = std::make_unique<BVHNode>(list);
 	//std::unique_ptr<Hitable>  world(finalRandomScene());
 	//std::unique_ptr<Hitable>  world(twoSphere());
-	std::unique_ptr<Hitable>  world(twoPerlinSphere());
+	//std::unique_ptr<Hitable>  world(twoPerlinSphere());
+	std::unique_ptr<Hitable>  world(earth());
 
 	// Camera information
 	glm::vec3 origin(13.0f, 2.0f, 3.0f);
