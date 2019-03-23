@@ -20,11 +20,6 @@ public:
 	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const override
 	{
 
-		std::random_device rd;  //Will be used to obtain a seed for the random number engine
-		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-		std::uniform_real_distribution<> dis(0.0f, 1.0f);
-
-
 		glm::vec3 outwardNormal;
 		glm::vec3 reflected = reflect(in.direction(), in.hitRec().N);
 		float niOverNt;
@@ -36,13 +31,13 @@ public:
 		{
 			outwardNormal = -in.hitRec().N;
 			niOverNt = m_indice;
-			cosine = m_indice * glm::dot(in.direction(), in.hitRec().N) / in.direction().length();
+			cosine = m_indice * glm::dot(in.direction(), in.hitRec().N) / glm::length(in.direction());
 		}
 		else
 		{
 			outwardNormal = in.hitRec().N;
 			niOverNt = 1.0f / m_indice;
-			cosine = -glm::dot(in.direction(), in.hitRec().N) / in.direction().length();
+			cosine = -glm::dot(in.direction(), in.hitRec().N) / glm::length(in.direction());
 		}
 
 		if (refract(in.direction(), outwardNormal, niOverNt, refracted))

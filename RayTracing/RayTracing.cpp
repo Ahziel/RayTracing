@@ -113,7 +113,7 @@ std::unique_ptr<Hitable> finalRandomScene()
 		{
 			float chooseMat = float(dis(gen));
 			glm::vec3 center(a + 0.9f * dis(gen), 0.2, b + 0.9f * dis(gen));
-			if ((center - glm::vec3(4.0f, 0.2f, 0.0f)).length() > 0.9f)
+			if (glm::length(center - glm::vec3(4.0f, 0.2f, 0.0f)) > 0.9f)
 			{
 				if (chooseMat < 0.8f) // Diffuse material
 				{
@@ -176,7 +176,7 @@ int main() {
 	// Set size
 	int width = 600;
 	int height = 300;
-	int loopAA = 100;
+	int loopAA = 30;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -184,9 +184,9 @@ int main() {
 	PPM image(width, height);
 
 	//std::unique_ptr<Hitable>  world = std::make_unique<BVHNode>(list);
-	//std::unique_ptr<Hitable>  world(finalRandomScene());
+	std::unique_ptr<Hitable>  world(finalRandomScene());
 	//std::unique_ptr<Hitable>  world(twoSphere());
-	std::unique_ptr<Hitable>  world(twoPerlinSphere());
+	//std::unique_ptr<Hitable>  world(twoPerlinSphere());
 
 	// Camera information
 	glm::vec3 origin(13.0f, 2.0f, 3.0f);

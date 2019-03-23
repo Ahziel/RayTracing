@@ -30,6 +30,7 @@ public:
 	int width() const { return m_width; }
 	int height() const { return m_height; }
 
+
 	void write(const char* name)
 	{
 		std::ofstream ofs("test.ppm", std::ofstream::trunc); // Create file with overwrite if necessary

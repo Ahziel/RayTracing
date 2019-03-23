@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CastedRay.h"
-#include <random>
 
 #include "Random.h"
 //Change this class to use matrix
