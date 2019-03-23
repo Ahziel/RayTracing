@@ -13,6 +13,8 @@
 // https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1
 // https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2
 
+// TOCHECK There is probably mistakes
+
 class Perlin
 {
 
@@ -20,7 +22,7 @@ public :
 
 	Perlin()
 	{
-		perlinGenerate(m_ranfloat);
+		perlinGenerate(m_ranvec);
 		perlinGeneratePerm(m_permX);
 		perlinGeneratePerm(m_permY);
 		perlinGeneratePerm(m_permZ);
@@ -31,20 +33,42 @@ public :
 		float u = p.x - floor(p.x);
 		float v = p.y - floor(p.y);
 		float w = p.z - floor(p.z);
+		int i = floor(p.x);
+		int j = floor(p.y);
+		int k = floor(p.z);
+		glm::vec3 c[2][2][2];
+		for (int di = 0; di < 2; di++)
+		{
+			for (int dj = 0; dj < 2; dj++)
+			{
+				for (int dk = 0; dk < 2; dk++)
+				{
+					c[di][dj][dk] = m_ranvec[m_permX[(i + di) & 255] ^ m_permY[(j + dj) & 255] ^ m_permZ[(k + dk) & 255]];
+				}
+			}
+		}
 
-		int i = int(4.0f * p.x) & 255;
-		int j = int(4.0f * p.y) & 255;
-		int k = int(4.0f * p.z) & 255;
+		return perlinInterpolation(c,u,v,w);
+	}
 
-		return m_ranfloat[m_permX[i] ^ m_permY[j] ^ m_permZ[k]];
+	float turb(const glm::vec3& p, int depth = 7) const {
+		float accum = 0;
+		glm::vec3 temp_p = p;
+		float weight = 1.0;
+		for (int i = 0; i < depth; i++) {
+			accum += weight*noise(temp_p);
+			weight *= 0.5;
+			temp_p *= 2;
+		}
+		return fabs(accum);
 	}
 
 private :
 
-	void perlinGenerate(std::array<float, 256> &p)
+	void perlinGenerate(std::array<glm::vec3, 256> &p)
 	{
 		for (auto & element : p) {
-			element = float(dis(gen));
+			element = glm::normalize(glm::vec3(-1.0f + 2.0f * dis(gen), -1.0f + 2.0f * dis(gen), -1.0f + 2.0f * dis(gen)));
 		}
 	}
 
@@ -68,8 +92,27 @@ private :
 		permute(p);
 	}
 
+	// TODO : Change this function et put it in a utility file
+	float perlinInterpolation(glm::vec3 c[2][2][2], float u, float v, float w) const 
+	{
+		float uu = u*u*(3 - 2 * u);
+		float vv = v*v*(3 - 2 * v);
+		float ww = w*w*(3 - 2 * w);
+		float accum = 0;
+		for (int i = 0; i < 2; i++)
+			for (int j = 0; j < 2; j++)
+				for (int k = 0; k < 2; k++) {
+					glm::vec3 weight_v(u - i, v - j, w - k);
+					accum += (i*uu + (1 - i)*(1 - uu))*
+						(j*vv + (1 - j)*(1 - vv))*
+						(k*ww + (1 - k)*(1 - ww))*dot(c[i][j][k], weight_v);
+				}
+		return accum;
+	}
+
+
 	// Check if the class vector is necessary
-	std::array<float, 256> m_ranfloat;
+	std::array<glm::vec3, 256> m_ranvec;
 	std::array<int, 256> m_permX;
 	std::array<int, 256> m_permY;
 	std::array<int, 256> m_permZ;

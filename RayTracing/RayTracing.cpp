@@ -37,6 +37,7 @@
 // To check execution time
 #include <chrono>
 #include <ctime>  
+#include <algorithm>
 
 const float PI = 3.14159265359f;
 
@@ -66,11 +67,11 @@ glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 		CastedRay scattered;
 		
 
-		if (depth < 5 && r.hitRec().matPtr != nullptr)
+		if (depth < 50 && r.hitRec().matPtr != nullptr)
 		{
 			if (r.hitRec().matPtr->scatter(r, col, scattered))
 			{
-				col = col * color(scattered, world, depth + 1);
+				col *=  color(scattered, world, depth + 1);
 			}
 		}
 		else
@@ -159,7 +160,7 @@ std::unique_ptr<Hitable> twoSphere()
 
 std::unique_ptr<Hitable> twoPerlinSphere()
 {
-	auto perlinTex = std::make_shared<NoiseTexture>();
+	auto perlinTex = std::make_shared<NoiseTexture>(3);
 
 	std::vector<std::shared_ptr<Hitable> > list;
 
@@ -176,7 +177,7 @@ int main() {
 	// Set size
 	int width = 600;
 	int height = 300;
-	int loopAA = 30;
+	int loopAA = 50;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -184,9 +185,9 @@ int main() {
 	PPM image(width, height);
 
 	//std::unique_ptr<Hitable>  world = std::make_unique<BVHNode>(list);
-	std::unique_ptr<Hitable>  world(finalRandomScene());
+	//std::unique_ptr<Hitable>  world(finalRandomScene());
 	//std::unique_ptr<Hitable>  world(twoSphere());
-	//std::unique_ptr<Hitable>  world(twoPerlinSphere());
+	std::unique_ptr<Hitable>  world(twoPerlinSphere());
 
 	// Camera information
 	glm::vec3 origin(13.0f, 2.0f, 3.0f);
@@ -199,11 +200,12 @@ int main() {
 	// Start time of the rendering
 	auto start = std::chrono::system_clock::now();
 
-#pragma omp parallel for schedule(static)
+//#pragma omp parallel for schedule(static)
 	for (int j = 0; j < height; j++)
 	{
 		for (int i = 0; i < width; i++)
 		{
+
 			glm::vec3 col(0.0f);
 			for (int s = 0; s < loopAA; s++)
 			{
@@ -212,19 +214,17 @@ int main() {
 
 				CastedRay r = cam.generateRay(u, v);
 				col += color(r, world, 0);
-				
-				
 			}
 
 			col /= float(loopAA);
-			// gamma
 			col = glm::vec3(sqrt(col.x), sqrt(col.y), sqrt(col.z));
 
 			int red = int(255.99 * col.x);
 			int green = int(255.99 * col.y);
 			int blue = int(255.99 * col.z);
+			glm::ivec3 result = glm::ivec3(red, green, blue);
 
-			image[j][i] = glm::ivec3(red, green, blue);
+			image[j][i] = result;
 		}
 	}
 
