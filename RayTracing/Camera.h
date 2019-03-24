@@ -5,11 +5,16 @@
 #include "Random.h"
 //Change this class to use matrix
 
+
+std::random_device rdC;  //Will be used to obtain a seed for the random number engine
+std::mt19937 genC(rdC()); //Standard mersenne_twister_engine seeded with rd()
+std::uniform_real_distribution<> disC(0.0f, 1.0f);
+
 glm::vec3 randomInUnitDisk()
 {
 	glm::vec3 p;
 	do {
-		p = 2.0f * glm::vec3(dis(gen), dis(gen), 0.0f) - glm::vec3(1.0f, 1.0f, 0.0f);
+		p = 2.0f * glm::vec3(disC(genC), disC(genC), 0.0f) - glm::vec3(1.0f, 1.0f, 0.0f);
 	} while (glm::dot(p, p) >= 1.0f);
 	return p;
 }
@@ -44,7 +49,7 @@ public:
 	{
 		glm::vec3 rd = m_lensRadius * randomInUnitDisk();
 		glm::vec3 offset = m_u * rd.x + m_v * rd.y;
-		float time = m_time0 + dis(gen) * (m_time1 - m_time0);
+		float time = m_time0 + disC(genC) * (m_time1 - m_time0);
 		return CastedRay(m_origin + offset, m_lowerLeftCorner + u * m_horizontal + v * m_vertical - m_origin - offset, time);
 	}
 

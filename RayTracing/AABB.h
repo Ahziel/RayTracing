@@ -114,6 +114,7 @@ public :
 		exitT = tmax;
 		return true;
 	}
+
 private :
 
 	glm::vec3 m_bounds[2];

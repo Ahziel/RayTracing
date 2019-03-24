@@ -19,6 +19,7 @@
 #include "MovingSphere.h"
 #include "Rectangle.h"
 #include "FlipNormal.h"
+#include "Box.h"
 
 #include "Lambertian.h"
 #include "Metal.h"
@@ -45,6 +46,10 @@
 #include <algorithm>
 
 const float PI = 3.14159265359f;
+
+std::random_device rd;  //Will be used to obtain a seed for the random number engine
+std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+std::uniform_real_distribution<> dis(0.0f, 1.0f);
 
 // This function reset the performance statistique variable
 void resetStat()
@@ -223,6 +228,9 @@ std::unique_ptr<Hitable> cornellBox()
 	list.push_back(std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white));
 	list.push_back(std::make_shared<FlipNormal>(std::make_shared<RectXY>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
 
+	list.push_back(std::make_shared<Box>(glm::vec3(130.0f, 0.0f, 65.0f), glm::vec3(295.0f, 165.0f, 230.0f), white));
+	list.push_back(std::make_shared<Box>(glm::vec3(265.0f, 0.0f, 295.0f), glm::vec3(430.0f, 330.0f, 460.0f), white));
+
 	return std::make_unique<BVHNode>(list);
 }
 
@@ -233,7 +241,7 @@ int main() {
 	// Set size
 	int width = 600;
 	int height = 300;
-	int loopAA = 100;
+	int loopAA = 500;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -260,7 +268,7 @@ int main() {
 	// Start time of the rendering
 	auto start = std::chrono::system_clock::now();
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) num_threads(4)
 	for (int j = 0; j < height; j++)
 	{
 		for (int i = 0; i < width; i++)

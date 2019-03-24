@@ -7,7 +7,6 @@
 
 #include "Hitable.h"
 #include "AABB.h"
-#include "Random.h"
 
 
 class BVHNode : public Hitable
@@ -30,7 +29,9 @@ public:
 		}
 		else
 		{
-			
+			std::random_device rdu;     // only used once to initialise (seed) engine
+			std::mt19937 rng(rdu());    // random-number engine used (Mersenne-Twister in this case)
+			std::uniform_int_distribution<int> uni(0, 2); // guaranteed unbiased
 
 			int axis = uni(rng);
 

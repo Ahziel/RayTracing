@@ -50,7 +50,7 @@ public:
 			reflectProb = 1.0f;
 		}
 
-		if (dis(gen) < reflectProb)
+		if (disM(genM) < reflectProb)
 		{
 			scattered = CastedRay(in.hitRec().P, reflected, in.time());
 		}

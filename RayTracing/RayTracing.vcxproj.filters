@@ -123,6 +123,12 @@
     <ClInclude Include="FlipNormal.h">
       <Filter>Header Files\Structures</Filter>
     </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Header Files\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Translate.h">
+      <Filter>Header Files\Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

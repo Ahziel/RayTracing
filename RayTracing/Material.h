@@ -3,7 +3,12 @@
 #include "Hitable.h"
 #include "CastedRay.h"
 #include "Texture.h"
-#include "Random.h"
+
+#include <random>
+
+std::random_device rdM;  //Will be used to obtain a seed for the random number engine
+std::mt19937 genM(rdM()); //Standard mersenne_twister_engine seeded with rd()
+std::uniform_real_distribution<> disM(0.0f, 1.0f);
 
 // TODO : Change for a real hemisphere sampler see :
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/global-illumination-path-tracing/global-illumination-path-tracing-practical-implementation
@@ -15,7 +20,7 @@ glm::vec3 randomUnitSphere()
 
 	glm::vec3 P;
 	do {
-		P = 2.0f * glm::vec3(dis(gen), dis(gen), dis(gen)) - glm::vec3(1.0f);
+		P = 2.0f * glm::vec3(disM(genM), disM(genM), disM(genM)) - glm::vec3(1.0f);
 	} while (glm::dot(P,P) >= 1.0f); // TODO : Check for P.length() * P.length(), before i used my gunction squaredLength
 	return P;
 }
