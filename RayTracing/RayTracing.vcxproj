@@ -155,6 +155,8 @@
     <ClInclude Include="CheckerTexture.h" />
     <ClInclude Include="ConstantTexture.h" />
     <ClInclude Include="Dielectric.h" />
+    <ClInclude Include="DiffuseLight.h" />
+    <ClInclude Include="FlipNormal.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
     <ClInclude Include="HitRecord.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="PPM.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="stdafx.h" />

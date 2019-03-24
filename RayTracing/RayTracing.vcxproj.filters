@@ -114,6 +114,15 @@
     <ClInclude Include="ImageTexture.h">
       <Filter>Header Files\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="DiffuseLight.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Rectangle.h">
+      <Filter>Header Files\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="FlipNormal.h">
+      <Filter>Header Files\Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

@@ -6,14 +6,15 @@
 #include <glm/vec3.hpp>
 #include <glm/geometric.hpp>
 
-#include "Random.h"
-
-
 // Reread this section from the tutorial, and maybe check scratchapixel article 
 // https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1
 // https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2
 
 // TOCHECK There is probably mistakes
+
+std::random_device rdPerlin;  //Will be used to obtain a seed for the random number engine
+std::mt19937 genPerlin(rdPerlin()); //Standard mersenne_twister_engine seeded with rd()
+std::uniform_real_distribution<> disPerlin(0.0f, 1.0f);
 
 class Perlin
 {
@@ -67,8 +68,9 @@ private :
 
 	void perlinGenerate(std::array<glm::vec3, 256> &p)
 	{
-		for (auto & element : p) {
-			element = glm::normalize(glm::vec3(-1.0f + 2.0f * dis(gen), -1.0f + 2.0f * dis(gen), -1.0f + 2.0f * dis(gen)));
+		for (int i = 0; i < 256; i++)
+		{
+			p[i] = glm::normalize(glm::vec3(-1.0f + 2.0f * disPerlin(genPerlin), -1.0f + 2.0f * disPerlin(genPerlin), -1.0f + 2.0f * disPerlin(genPerlin)));
 		}
 	}
 
@@ -76,7 +78,7 @@ private :
 	{
 		for (int i = p.size() -1; i > 0; i--)
 		{
-			int target = int(dis(gen) * (i +1));
+			int target = int(disPerlin(genPerlin) * (i +1));
 			int tmp = p[i];
 			p[i] = p[target];
 			p[target] = tmp;

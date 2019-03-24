@@ -17,6 +17,8 @@
 
 #include "Sphere.h"
 #include "MovingSphere.h"
+#include "Rectangle.h"
+#include "FlipNormal.h"
 
 #include "Lambertian.h"
 #include "Metal.h"
@@ -26,6 +28,7 @@
 #include "CheckerTexture.h"
 #include "NoiseTexture.h"
 #include "ImageTexture.h"
+#include "DiffuseLight.h"
 
 #include "Stats.h"
 #include "Random.h"
@@ -67,13 +70,16 @@ glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
 	if (world->intersect(r, 0.001f, std::numeric_limits<float>::max()))
 	{
 		CastedRay scattered;
-		
-
 		if (depth < 50 && r.hitRec().matPtr != nullptr)
 		{
+			glm::vec3 emitted = r.hitRec().matPtr->emitted(r.hitRec().u, r.hitRec().v, r.hitRec().P);
 			if (r.hitRec().matPtr->scatter(r, col, scattered))
 			{
-				/*col *=  color(scattered, world, depth + 1);*/
+				col = emitted + col * color(scattered, world, depth + 1);
+			}
+			else
+			{
+				col = emitted;
 			}
 		}
 		else
@@ -182,7 +188,40 @@ std::unique_ptr<Hitable> earth()
 	std::vector<std::shared_ptr<Hitable> > list;
 
 	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, 0.0f), 2.0f, std::make_shared<Lambertian>(imgTex)));
-	//list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, 0.0f), 2.0f, std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.8f, 0.3f, 0.3f)))));
+
+	return std::make_unique<BVHNode>(list);
+}
+
+std::unique_ptr<Hitable> simpleLight()
+{
+
+	auto perlinTex = std::make_shared<NoiseTexture>(4);
+
+	std::vector<std::shared_ptr<Hitable> > list;
+
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, -1000.0f, 0.0f), 1000.0f, std::make_shared<Lambertian>(perlinTex)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 2.0f, 0.0f), 2.0f, std::make_shared<Lambertian>(perlinTex)));
+	list.push_back(std::make_shared<RectXY>(3.0f, 5.0f, 1.0f, 3.0f, -2.0, std::make_shared<DiffuseLight>(std::make_shared<ConstantTexture>(glm::vec3(4.0f, 4.0f, 4.0f)))));
+
+	return std::make_unique<BVHNode>(list);
+}
+
+std::unique_ptr<Hitable> cornellBox()
+{
+
+	auto red = std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.65f, 0.05f, 0.05f)));
+	auto white = std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.73f, 0.73f, 0.73f)));
+	auto green = std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.12f, 0.45f, 0.15f)));
+	auto light = std::make_shared<DiffuseLight>(std::make_shared<ConstantTexture>(glm::vec3(15.0f, 15.0f, 15.0f)));
+
+	std::vector<std::shared_ptr<Hitable> > list;
+
+	list.push_back(std::make_shared<FlipNormal>(std::make_shared<RectYZ>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, green )));
+	list.push_back(std::make_shared<RectYZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, red));
+	list.push_back(std::make_shared<RectXZ>(213.0f, 343.0f, 227.0f, 332.0f, 554.0f, light));
+	list.push_back(std::make_shared<FlipNormal>(std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
+	list.push_back(std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white));
+	list.push_back(std::make_shared<FlipNormal>(std::make_shared<RectXY>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
 
 	return std::make_unique<BVHNode>(list);
 }
@@ -194,7 +233,7 @@ int main() {
 	// Set size
 	int width = 600;
 	int height = 300;
-	int loopAA = 5;
+	int loopAA = 100;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -205,20 +244,23 @@ int main() {
 	//std::unique_ptr<Hitable>  world(finalRandomScene());
 	//std::unique_ptr<Hitable>  world(twoSphere());
 	//std::unique_ptr<Hitable>  world(twoPerlinSphere());
-	std::unique_ptr<Hitable>  world(earth());
+	//std::unique_ptr<Hitable>  world(earth());
+	//std::unique_ptr<Hitable>  world(simpleLight());
+	std::unique_ptr<Hitable>  world(cornellBox());
 
 	// Camera information
-	glm::vec3 origin(13.0f, 2.0f, 3.0f);
-	glm::vec3 lookat(0.0f, 0.0f, 0.0f);
+	glm::vec3 origin(278.0f, 278.0f, -800.0f);
+	glm::vec3 lookat(278.0f, 278.0f, 0.0f);
 	float distToFocus = 10.0f;
 	float aperture = 0.0f;
+	float vfov = 40.0f;
 
-	Camera cam(origin, lookat, glm::vec3(0.0, 1.0, 0.0), 20.0f, float(width) / float(height), aperture, distToFocus, 0.0, 1.0);
+	Camera cam(origin, lookat, glm::vec3(0.0, 1.0, 0.0), vfov, float(width) / float(height), aperture, distToFocus, 0.0f, 1.0f);
 
 	// Start time of the rendering
 	auto start = std::chrono::system_clock::now();
 
-//#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(dynamic)
 	for (int j = 0; j < height; j++)
 	{
 		for (int i = 0; i < width; i++)

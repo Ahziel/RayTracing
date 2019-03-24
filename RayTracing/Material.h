@@ -49,4 +49,5 @@ class Material
 {
 public:
 	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const = 0;
+	virtual glm::vec3 emitted(float u, float v, const glm::vec3& p) const { return glm::vec3(0.0f, 0.0f, 0.0f);}
 };

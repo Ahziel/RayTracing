@@ -2,6 +2,9 @@
 
 #include <memory>
 
+#include <glm/vec3.hpp>
+#include <glm/geometric.hpp>
+
 // Check why it's needed
 class Material;
 class AABB;
