@@ -34,6 +34,16 @@ public :
 		return m_bounds[1];
 	}
 
+	void setMin(glm::vec3 &min) 
+	{
+		m_bounds[0] = min;
+	}
+
+	void setMax(glm::vec3 &max)
+	{
+		m_bounds[1] = max;
+	}
+
 	bool isEmpty() const
 	{
 		bool result = false;
