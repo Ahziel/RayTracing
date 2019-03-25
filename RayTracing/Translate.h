@@ -13,7 +13,7 @@ public :
 
 	virtual bool intersect(CastedRay& r, float t_min, float t_max) const override
 	{
-		CastedRay moved(r.origin() - m_offset, r.direction, r.time());
+		CastedRay moved(r.origin() - m_offset, r.direction(), r.time());
 		if (m_obj->intersect(moved, t_min, t_max))
 		{
 			moved.m_rec.P += m_offset;

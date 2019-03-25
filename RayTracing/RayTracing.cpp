@@ -21,6 +21,9 @@
 #include "FlipNormal.h"
 #include "Box.h"
 
+#include "Rotation.h"
+#include "Translate.h"
+
 #include "Lambertian.h"
 #include "Metal.h"
 #include "Dielectric.h"
@@ -228,8 +231,8 @@ std::unique_ptr<Hitable> cornellBox()
 	list.push_back(std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white));
 	list.push_back(std::make_shared<FlipNormal>(std::make_shared<RectXY>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
 
-	list.push_back(std::make_shared<Box>(glm::vec3(130.0f, 0.0f, 65.0f), glm::vec3(295.0f, 165.0f, 230.0f), white));
-	list.push_back(std::make_shared<Box>(glm::vec3(265.0f, 0.0f, 295.0f), glm::vec3(430.0f, 330.0f, 460.0f), white));
+	list.push_back(std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 165.0f, 165.0f), white), -18.0f),glm::vec3(130.0f,0.0f,65.0f)));
+	list.push_back(std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 330.0f, 165.0f), white), 15.0f),glm::vec3(265.0f,0.0f,295.0f)));
 
 	return std::make_unique<BVHNode>(list);
 }
