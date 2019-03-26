@@ -20,6 +20,7 @@
 #include "Rectangle.h"
 #include "FlipNormal.h"
 #include "Box.h"
+#include "ConstantMedium.h"
 
 #include "Rotation.h"
 #include "Translate.h"
@@ -231,8 +232,73 @@ std::unique_ptr<Hitable> cornellBox()
 	list.push_back(std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white));
 	list.push_back(std::make_shared<FlipNormal>(std::make_shared<RectXY>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
 
-	list.push_back(std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 165.0f, 165.0f), white), -18.0f),glm::vec3(130.0f,0.0f,65.0f)));
-	list.push_back(std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 330.0f, 165.0f), white), 15.0f),glm::vec3(265.0f,0.0f,295.0f)));
+	std::shared_ptr<Hitable> b1 = std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(
+		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 165.0f, 165.0f), white), -18.0f), glm::vec3(130.0f, 0.0f, 65.0f));
+	std::shared_ptr<Hitable> b2 = std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(
+		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 330.0f, 165.0f), white), 15.0f), glm::vec3(265.0f, 0.0f, 295.0f));
+
+	list.push_back(std::make_shared<ConstantMedium>(b1, 0.01f, std::make_shared<ConstantTexture>(glm::vec3(1.0f, 1.0f, 1.0f))));
+	list.push_back(std::make_shared<ConstantMedium>(b2, 0.01f, std::make_shared<ConstantTexture>(glm::vec3(0.0f, 0.0f, 0.0f))));
+
+	return std::make_unique<BVHNode>(list);
+}
+
+std::unique_ptr<Hitable> finalRandomSceneNextWeek()
+{
+	int nb = 20;
+
+	std::vector<std::shared_ptr<Hitable> > list;
+	std::vector<std::shared_ptr<Hitable> > boxlist;
+	std::vector<std::shared_ptr<Hitable> > spherelist;
+
+	auto white = std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.73f, 0.73f, 0.73f)));
+	auto ground = std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.48f, 0.83f, 0.53f)));
+
+	for (int i = 0; i < nb; i++)
+	{
+		for (int j = 0; j < nb; j++)
+		{
+			float w = 100.0f;
+			float x0 = -1000.0f + i * w;
+			float z0 = -1000.0f + j * w;
+			float y0 = 0.0f;
+			float x1 = x0 + w;
+			float y1 = 100.0f * (dis(gen) + 0.01f);
+			float z1 = z0 + w;
+			boxlist.push_back(std::make_shared<Box>(glm::vec3(x0, y0, z0), glm::vec3(x1, y1, z1), ground));
+		}
+	}
+
+	list.push_back(std::make_shared<BVHNode>(boxlist));
+
+	auto light = std::make_shared<DiffuseLight>(std::make_shared<ConstantTexture>(glm::vec3(7.0f, 7.0f, 7.0f)));
+	list.push_back(std::make_shared<RectXZ>(123.f, 423.0f, 147.0f, 412.0f, 554.0f, light));
+
+	glm::vec3 center(400.0f, 400.0f, 200.0f);
+	list.push_back(std::make_shared<MovingSphere>(center, center + glm::vec3(30.0f, 0.0f, 0.0f), 0.0f, 1.0f, 50.0f, 
+		std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.7f, 0.3f, 0.1f)))));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(260.0f,150.0f,45.0f), 50.0f, std::make_shared<Dielectric>(1.5f)));
+	list.push_back(std::make_shared<Sphere>(glm::vec3(0.0f, 150.0f, 145.0f), 50.0f, std::make_shared<Metal>(glm::vec3(0.8f,0.8f,0.9f), 10.0f)));
+
+	std::shared_ptr<Hitable> boundary = std::make_shared<Sphere>(glm::vec3(360.0f, 150.0f, 145.0f), 70.0f, std::make_shared<Dielectric>(1.5f));
+	list.push_back(std::make_shared<ConstantMedium>(boundary, 0.2f, std::make_shared<ConstantTexture>(glm::vec3(0.2f, 0.4f, 0.9f))));
+	boundary = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, 0.0f), 5000.0f, std::make_shared<Dielectric>(1.5f));
+	list.push_back(std::make_shared<ConstantMedium>(boundary, 0.0001f, std::make_shared<ConstantTexture>(glm::vec3(1.0f))));
+
+	int widthTex, heightTex, chanelTex;
+	unsigned char *tex_data = stbi_load("earthNight.jpg", &widthTex, &heightTex, &chanelTex, 0);
+	auto imgTex = std::make_shared<ImageTexture>(tex_data, widthTex, heightTex);
+	list.push_back(std::make_shared<Sphere>(glm::vec3(400.0f, 200.0f, 400.0f), 100.0f, std::make_shared<Lambertian>(imgTex)));
+
+	auto perlinTex = std::make_shared<NoiseTexture>(0.1f);
+	list.push_back(std::make_shared<Sphere>(glm::vec3(220.0f, 280.0f, 300.0f), 80.0f, std::make_shared<Lambertian>(perlinTex)));
+
+	int ns = 1000;
+	for (int j = 0; j < ns; j++)
+	{
+		spherelist.push_back(std::make_shared<Sphere>(glm::vec3(165.0f * dis(gen), 165.0f * dis(gen), 165.0f * dis(gen)), 10.0f, white));
+	}
+	list.push_back(std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<BVHNode>(list), 15.0f), glm::vec3(-100.0f, 270.0f, 395.0f)));
 
 	return std::make_unique<BVHNode>(list);
 }
@@ -242,9 +308,9 @@ int main() {
 	resetStat();
 
 	// Set size
-	int width = 600;
-	int height = 300;
-	int loopAA = 500;
+	int width = 200;
+	int height = 100;
+	int loopAA = 20;
 
 	// TODO : find a better way to do this
 	numberOfPrimaryRay = width * height * loopAA;
@@ -257,7 +323,8 @@ int main() {
 	//std::unique_ptr<Hitable>  world(twoPerlinSphere());
 	//std::unique_ptr<Hitable>  world(earth());
 	//std::unique_ptr<Hitable>  world(simpleLight());
-	std::unique_ptr<Hitable>  world(cornellBox());
+	//std::unique_ptr<Hitable>  world(cornellBox());
+	std::unique_ptr<Hitable>  world(finalRandomSceneNextWeek());
 
 	// Camera information
 	glm::vec3 origin(278.0f, 278.0f, -800.0f);

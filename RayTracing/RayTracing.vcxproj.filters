@@ -129,6 +129,12 @@
     <ClInclude Include="Rotation.h">
       <Filter>Header Files\Structures</Filter>
     </ClInclude>
+    <ClInclude Include="ConstantMedium.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Isotropic.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

@@ -154,6 +154,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CastedRay.h" />
     <ClInclude Include="CheckerTexture.h" />
+    <ClInclude Include="ConstantMedium.h" />
     <ClInclude Include="ConstantTexture.h" />
     <ClInclude Include="Dielectric.h" />
     <ClInclude Include="DiffuseLight.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="HitableList.h" />
     <ClInclude Include="HitRecord.h" />
     <ClInclude Include="ImageTexture.h" />
+    <ClInclude Include="Isotropic.h" />
     <ClInclude Include="Lambertian.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Metal.h" />
