@@ -67,10 +67,10 @@ public :
 			glm::vec3 P = rotated.hitRec().P;
 			glm::vec3 N = rotated.hitRec().N;
 
-			P.x = m_cosTheta * rotated.hitRec().P.x - m_sinTheta * rotated.hitRec().P.z;
+			P.x = m_cosTheta * rotated.hitRec().P.x + m_sinTheta * rotated.hitRec().P.z;
 			P.z = -m_sinTheta * rotated.hitRec().P.x + m_cosTheta * rotated.hitRec().P.z;
 
-			N.x = m_cosTheta * rotated.hitRec().N.x - m_sinTheta * rotated.hitRec().N.z;
+			N.x = m_cosTheta * rotated.hitRec().N.x + m_sinTheta * rotated.hitRec().N.z;
 			N.z = -m_sinTheta * rotated.hitRec().N.x + m_cosTheta * rotated.hitRec().N.z;
 
 			r.setHitRec(rotated.hitRec());
