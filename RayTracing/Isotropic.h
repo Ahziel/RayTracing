@@ -9,7 +9,7 @@ public :
 
 	Isotropic(std::shared_ptr<Texture> albedo) : m_albedo(albedo) {}
 
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const override
+	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const 
 	{
 		scattered = CastedRay(in.hitRec().P, randomUnitSphere(), in.time());
 		attenuation = m_albedo->getValue(in.hitRec().u, in.hitRec().v, in.hitRec().P);

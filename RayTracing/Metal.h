@@ -26,7 +26,7 @@ public :
 	}
 	~Metal() {}
 
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const override
+	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const 
 	{
 		glm::vec3 reflected = reflect(in.direction(), in.hitRec().N);
 		scattered = CastedRay(in.hitRec().P, reflected + m_fuzz * randomUnitSphere(), in.time());

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Material.h"
+#include "ONB.h"
 
 /*
 
@@ -18,11 +19,24 @@ public :
 	Lambertian(std::shared_ptr<Texture> albedo) : m_albedo(albedo) {}
 	~Lambertian() {}
 
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const override
+	float scattering_pdf(const CastedRay &in, const CastedRay &scattered) const
 	{
-		glm::vec3 target = in.hitRec().P + in.hitRec().N + randomUnitSphere();
-		scattered = CastedRay(in.hitRec().P, target - in.hitRec().P, in.time());
+		float cosine = glm::dot(in.hitRec().N, glm::normalize(scattered.direction()));
+		if (cosine < 0.0f)
+		{
+			cosine = 0.0f;
+		}
+		return (cosine / 3.14159265f);
+	}
+
+	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered, float &pdf) const 
+	{
+		ONB uvw;
+		uvw.build(in.hitRec().N);
+		glm::vec3 direction = uvw.local(randomCosineDirection());
+		scattered = CastedRay(in.hitRec().P, direction, in.time());
 		attenuation = m_albedo->getValue(in.hitRec().u , in.hitRec().v, in.hitRec().P);
+		pdf = glm::dot(uvw.w(), direction) / 3.14159265f;
 		return true;
 	}
 

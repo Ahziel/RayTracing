@@ -87,6 +87,28 @@ public:
 		return glm::vec3((m_x0 + m_x1) / 2.0f, m_k, (m_z0 + m_z1) / 2.0f);
 	}
 
+	virtual float pdfValue(const glm::vec3 &o, const glm::vec3 &v) const override
+	{ 
+		CastedRay ray(o, v, 0.0f);
+		if (this->intersect(ray, 0.0f, std::numeric_limits<float>::max()))
+		{
+			float area = (m_x1 - m_x0) * (m_z1 - m_z0);
+			float distanceSquared = ray.hitRec().t *  ray.hitRec().t * glm::dot(v, v);
+			float cosine = fabs(glm::dot(v, ray.hitRec().N) / glm::length(v));
+			return distanceSquared / (cosine * area);
+		}
+		else
+		{
+			return 0.0f;
+		}
+	}
+
+	virtual glm::vec3 random(const glm::vec3 &o) const override
+	{ 
+		glm::vec3 randomPoint = glm::vec3(m_x0 + disM(genM) * (m_x1 - m_x0), m_k, m_z0 + disM(genM) * (m_z1 - m_z0));
+		return randomPoint - o; 
+	}
+
 private:
 	float m_x0, m_x1, m_z0, m_z1, m_k;
 	std::shared_ptr<Material> m_mat;

@@ -10,6 +10,19 @@ std::random_device rdM;  //Will be used to obtain a seed for the random number e
 std::mt19937 genM(rdM()); //Standard mersenne_twister_engine seeded with rd()
 std::uniform_real_distribution<> disM(0.0f, 1.0f);
 
+
+glm::vec3 randomCosineDirection()
+{
+	float r1 = disM(genM);
+	float r2 = disM(genM);
+	float z = sqrtf(1.0f - r2);
+	float phi = 2.0f * 3.14159265f * r1;
+	float x = cos(phi) * 2.0f * sqrtf(r2);
+	float y = sin(phi) * 2.0f * sqrtf(r2);
+	return glm::vec3(x, y, z);
+}
+
+
 // TODO : Change for a real hemisphere sampler see :
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/global-illumination-path-tracing/global-illumination-path-tracing-practical-implementation
 // http://www.pbr-book.org/3ed-2018/Monte_Carlo_Integration/2D_Sampling_with_Multidimensional_Transformations.html#UniformSampleHemisphere
@@ -50,9 +63,19 @@ bool refract(const glm::vec3 &v, const glm::vec3 &n, float niOverNt, glm::vec3 &
 	}
 }
 
+
+struct scatter_record
+{
+	CastedRay specularRay;
+	bool isSpecular;
+	glm::vec3 attenuation;
+	std::shared_ptr<PDF> pdfPtr;
+};
+
 class Material
 {
 public:
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const = 0;
-	virtual glm::vec3 emitted(float u, float v, const glm::vec3& p) const { return glm::vec3(0.0f, 0.0f, 0.0f);}
+	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered, float &pdf) const { return false; }
+	virtual float scattering_pdf(const CastedRay& in, const CastedRay &scattered) const { return false; }
+	virtual glm::vec3 emitted(const CastedRay &in, float u, float v, const glm::vec3& p) const { return glm::vec3(0.0f, 0.0f, 0.0f);}
 };

@@ -135,6 +135,15 @@
     <ClInclude Include="Isotropic.h">
       <Filter>Header Files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Scenes.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ONB.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="PDF.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

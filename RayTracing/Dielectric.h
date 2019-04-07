@@ -17,7 +17,7 @@ public:
 	Dielectric(float indice) : m_indice(indice) {}
 	~Dielectric() {}
 
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const override
+	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const 
 	{
 
 		glm::vec3 outwardNormal;

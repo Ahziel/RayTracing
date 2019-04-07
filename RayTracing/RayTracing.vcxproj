@@ -169,11 +169,14 @@
     <ClInclude Include="Metal.h" />
     <ClInclude Include="MovingSphere.h" />
     <ClInclude Include="NoiseTexture.h" />
+    <ClInclude Include="ONB.h" />
+    <ClInclude Include="PDF.h" />
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="PPM.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Rotation.h" />
+    <ClInclude Include="Scenes.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="stdafx.h" />
