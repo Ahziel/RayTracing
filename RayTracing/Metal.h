@@ -26,12 +26,14 @@ public :
 	}
 	~Metal() {}
 
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const 
+	virtual bool  scatter(const CastedRay &in, ScatterRecord &srec) const
 	{
 		glm::vec3 reflected = reflect(in.direction(), in.hitRec().N);
-		scattered = CastedRay(in.hitRec().P, reflected + m_fuzz * randomUnitSphere(), in.time());
-		attenuation = m_albedo;
-		return (glm::dot(scattered.direction(), in.hitRec().N) > 0.0f);
+		srec.specularRay = CastedRay(in.hitRec().P, reflected + m_fuzz * randomUnitSphere(), in.time());
+		srec.attenuation = m_albedo;
+		srec.isSpecular = true;
+		srec.pdfPtr = nullptr;
+		return true;
 	}
 
 private :

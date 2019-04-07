@@ -29,14 +29,11 @@ public :
 		return (cosine / 3.14159265f);
 	}
 
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered, float &pdf) const 
+	virtual bool scatter(const CastedRay &in, ScatterRecord &srec) const
 	{
-		ONB uvw;
-		uvw.build(in.hitRec().N);
-		glm::vec3 direction = uvw.local(randomCosineDirection());
-		scattered = CastedRay(in.hitRec().P, direction, in.time());
-		attenuation = m_albedo->getValue(in.hitRec().u , in.hitRec().v, in.hitRec().P);
-		pdf = glm::dot(uvw.w(), direction) / 3.14159265f;
+		srec.isSpecular = false;
+		srec.attenuation = m_albedo->getValue(in.hitRec().u, in.hitRec().v, in.hitRec().P);
+		srec.pdfPtr = std::make_shared<CosinePDF>(in.hitRec().N);
 		return true;
 	}
 

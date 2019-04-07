@@ -10,6 +10,10 @@ class Material;
 class AABB;
 class CastedRay;
 
+std::random_device rdM;  //Will be used to obtain a seed for the random number engine
+std::mt19937 genM(rdM()); //Standard mersenne_twister_engine seeded with rd()
+std::uniform_real_distribution<> disM(0.0f, 1.0f);
+
 class Hitable
 {
 public : 

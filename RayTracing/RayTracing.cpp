@@ -62,26 +62,31 @@ void printStat()
 }
 
 // TODO : Check to change this pointer for a smartPointer ?
-glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, int depth)
+glm::vec3 color(CastedRay& r, std::unique_ptr<Hitable> &world, std::shared_ptr<Hitable> lightShape, int depth)
 {
 	glm::vec3 col(0.0f);
 	if (world->intersect(r, 0.001f, std::numeric_limits<float>::max()))
 	{
-		if (depth < 50 && r.hitRec().matPtr != nullptr)
+		if (depth < 5 && r.hitRec().matPtr != nullptr)
 		{
 			CastedRay scattered;
 			glm::vec3 emitted = r.hitRec().matPtr->emitted(r, r.hitRec().u, r.hitRec().v, r.hitRec().P);
 			float pdf_val;
-
-			if (r.hitRec().matPtr->scatter(r, col, scattered, pdf_val))
+			ScatterRecord srec;
+			if (r.hitRec().matPtr->scatter(r, srec))
 			{
-				CosinePDF p1(r.hitRec().N);
-				std::shared_ptr<Hitable> lightShape = std::make_shared<RectXZ>(213.0f, 343.0f, 227.0f, 332.0f, 554.0f, nullptr);
-				HitablePDF p2(lightShape, r.hitRec().P);
-				MixturePDF p(std::make_shared<CosinePDF>(p1), std::make_shared<HitablePDF>(p2));
-				scattered = CastedRay(r.hitRec().P, p.generate(), r.time());
-				pdf_val = p.value(scattered.direction());
-				col = emitted + col * r.hitRec().matPtr->scattering_pdf(r,scattered) * color(scattered, world, depth + 1) / pdf_val;
+				if (srec.isSpecular)
+				{
+					return srec.attenuation  * color(srec.specularRay, world, lightShape, depth + 1);
+				}
+				else
+				{
+					HitablePDF p2(lightShape, r.hitRec().P);
+					MixturePDF p(srec.pdfPtr, std::make_shared<HitablePDF>(p2));
+					scattered = CastedRay(r.hitRec().P, p.generate(), r.time());
+					pdf_val = p.value(scattered.direction());
+					col = emitted + srec.attenuation * r.hitRec().matPtr->scattering_pdf(r, scattered) * color(scattered, world, lightShape, depth + 1) / pdf_val;
+				}
 			}
 			else
 			{
@@ -107,8 +112,8 @@ int main() {
 	resetStat();
 
 	// Set size
-	int width = 500;
-	int height = 500;
+	int width = 200;
+	int height = 200;
 	int loopAA = 500;
 
 	// TODO : find a better way to do this
@@ -137,6 +142,14 @@ int main() {
 	// Start time of the rendering
 	auto start = std::chrono::system_clock::now();
 
+	std::shared_ptr<Hitable> lightShape = std::make_shared<RectXZ>(213.0f, 343.0f, 227.0f, 332.0f, 554.0f, nullptr);
+	std::shared_ptr<Hitable> glassSphere = std::make_shared<Sphere>(glm::vec3(190.0f, 90.0f, 190.0f), 90.0f, nullptr);
+
+	std::vector<std::shared_ptr<Hitable> > list;
+	list.push_back(lightShape);
+	list.push_back(glassSphere);
+	std::shared_ptr<HitableList> hlist = std::make_shared<HitableList>(list);
+
 #pragma omp parallel for schedule(dynamic) num_threads(4)
 	for (int j = 0; j < height; j++)
 	{
@@ -150,7 +163,7 @@ int main() {
 				float v = float(height - j + dis(gen)) / float(height);
 
 				CastedRay r = cam.generateRay(u, v);
-				col += deNaN(color(r, world, 0));
+				col += deNaN(color(r, world, hlist, 0));
 			}
 
 			col /= float(loopAA);

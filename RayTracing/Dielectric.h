@@ -17,13 +17,14 @@ public:
 	Dielectric(float indice) : m_indice(indice) {}
 	~Dielectric() {}
 
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered) const 
+	virtual bool scatter(const CastedRay &in, ScatterRecord &srec) const
 	{
-
+		srec.isSpecular = true;
+		srec.pdfPtr = 0;
+		srec.attenuation = glm::vec3(1.0, 1.0, 1.0);
 		glm::vec3 outwardNormal;
 		glm::vec3 reflected = reflect(in.direction(), in.hitRec().N);
 		float niOverNt;
-		attenuation = glm::vec3(1.0f, 1.0f, 1.0f);
 		glm::vec3 refracted;
 		float reflectProb;
 		float cosine;
@@ -46,17 +47,16 @@ public:
 		}
 		else
 		{
-			scattered = CastedRay(in.hitRec().P, reflected, in.time());
 			reflectProb = 1.0f;
 		}
 
 		if (disM(genM) < reflectProb)
 		{
-			scattered = CastedRay(in.hitRec().P, reflected, in.time());
+			srec.specularRay = CastedRay(in.hitRec().P, reflected, in.time());
 		}
 		else
 		{
-			scattered = CastedRay(in.hitRec().P, refracted, in.time());
+			srec.specularRay = CastedRay(in.hitRec().P, refracted, in.time());
 		}
 		return true;
 	}

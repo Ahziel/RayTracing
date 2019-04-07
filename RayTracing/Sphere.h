@@ -100,7 +100,43 @@ public :
 		v = (theta + 3.14159265359f / 2) / 3.14159265359f;
 	}
 
+	float pdfValue(const glm::vec3 &o, const glm::vec3 &v) const
+	{
+		CastedRay r(o, v, 0.0f);
+		if (this->intersect(r, 0.001f, std::numeric_limits<float>::max()))
+		{
+			float cosThetaMax = sqrt(1.0f - m_radius * m_radius / glm::dot((m_center - o), (m_center - o)));
+			float solidAngle = 2.0f * 3.14159265f * (1.0f - cosThetaMax);
+			return 1.0f / solidAngle;
+		}
+		else
+		{
+			return 0.0f;
+		}
+	}
+
+	inline glm::vec3 random(const glm::vec3 &o) const
+	{
+		glm::vec3 direction = m_center - o;
+		float distanceSquared = glm::dot(direction, direction);
+		ONB uvw;
+		uvw.build(direction);
+		return uvw.local(randomToSphere(m_radius, distanceSquared));
+	}
+
 private :
+
+	inline glm::vec3 randomToSphere(float radius, float distanceSquared) const
+	{
+		float r1 = disC(genC);
+		float r2 = disC(genC);
+		float z = 1.0f + r2 * (sqrtf(1.0f - (radius * radius)/distanceSquared) - 1.0f);
+		float phi = 2.0f * 3.14159265f * r1;
+		float x = cos(phi) * sqrtf( 1.0f - z * z);
+		float y = sin(phi) * sqrtf(1.0f - z * z);
+		return glm::vec3(x, y, z);
+	}
+
 	glm::vec3 m_center;
 	float m_radius;
 	std::shared_ptr<Material> m_mat;

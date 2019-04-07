@@ -148,6 +148,9 @@ std::unique_ptr<Hitable> cornellBox()
 	auto white = std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.73f, 0.73f, 0.73f)));
 	auto green = std::make_shared<Lambertian>(std::make_shared<ConstantTexture>(glm::vec3(0.12f, 0.45f, 0.15f)));
 	auto light = std::make_shared<DiffuseLight>(std::make_shared<ConstantTexture>(glm::vec3(15.0f, 15.0f, 15.0f)));
+	auto aluminium = std::make_shared<Metal>(glm::vec3(0.8f, 0.85f, 0.88f), 0.0f);
+	auto glass = std::make_shared<Dielectric>(1.5f);
+	
 
 	std::vector<std::shared_ptr<Hitable> > list;
 
@@ -158,12 +161,14 @@ std::unique_ptr<Hitable> cornellBox()
 	list.push_back(std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white));
 	list.push_back(std::make_shared<FlipNormal>(std::make_shared<RectXY>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
 
-	std::shared_ptr<Hitable> b1 = std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(
-		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 165.0f, 165.0f), white), -18.0f), glm::vec3(130.0f, 0.0f, 65.0f));
+	/*std::shared_ptr<Hitable> b1 = std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(
+		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 165.0f, 165.0f), white), -18.0f), glm::vec3(130.0f, 0.0f, 65.0f));*/
+	list.push_back(std::make_shared<Sphere>(glm::vec3(190, 90, 190), 90, glass));
+
 	std::shared_ptr<Hitable> b2 = std::make_shared<Translate>(std::make_shared<RotateY>(std::make_shared<Box>(
 		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(165.0f, 330.0f, 165.0f), white), 15.0f), glm::vec3(265.0f, 0.0f, 295.0f));
 
-	list.push_back(b1);
+	//list.push_back(b1);
 	list.push_back(b2);
 
 	return std::make_unique<BVHNode>(list);

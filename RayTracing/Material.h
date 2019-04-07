@@ -1,15 +1,21 @@
 #pragma once
 
 #include "Hitable.h"
-#include "CastedRay.h"
 #include "Texture.h"
+#include "CastedRay.h"
 
 #include <random>
+#include <memory>
 
-std::random_device rdM;  //Will be used to obtain a seed for the random number engine
-std::mt19937 genM(rdM()); //Standard mersenne_twister_engine seeded with rd()
-std::uniform_real_distribution<> disM(0.0f, 1.0f);
+class PDF;
 
+struct ScatterRecord
+{
+	CastedRay specularRay;
+	bool isSpecular;
+	glm::vec3 attenuation;
+	std::shared_ptr<PDF> pdfPtr;
+};
 
 glm::vec3 randomCosineDirection()
 {
@@ -34,7 +40,7 @@ glm::vec3 randomUnitSphere()
 	glm::vec3 P;
 	do {
 		P = 2.0f * glm::vec3(disM(genM), disM(genM), disM(genM)) - glm::vec3(1.0f);
-	} while (glm::dot(P,P) >= 1.0f); // TODO : Check for P.length() * P.length(), before i used my gunction squaredLength
+	} while (glm::dot(P, P) >= 1.0f); // TODO : Check for P.length() * P.length(), before i used my gunction squaredLength
 	return P;
 }
 
@@ -63,19 +69,11 @@ bool refract(const glm::vec3 &v, const glm::vec3 &n, float niOverNt, glm::vec3 &
 	}
 }
 
-
-struct scatter_record
-{
-	CastedRay specularRay;
-	bool isSpecular;
-	glm::vec3 attenuation;
-	std::shared_ptr<PDF> pdfPtr;
-};
-
 class Material
 {
+
 public:
-	virtual bool scatter(const CastedRay &in, glm::vec3 &attenuation, CastedRay &scattered, float &pdf) const { return false; }
+	virtual bool scatter(const CastedRay &in, ScatterRecord &scattered) const { return false; }
 	virtual float scattering_pdf(const CastedRay& in, const CastedRay &scattered) const { return false; }
 	virtual glm::vec3 emitted(const CastedRay &in, float u, float v, const glm::vec3& p) const { return glm::vec3(0.0f, 0.0f, 0.0f);}
 };

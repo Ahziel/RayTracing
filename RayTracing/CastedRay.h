@@ -4,8 +4,9 @@
 #include <limits>
 
 #include "Ray.h"
-#include "Material.h"
 #include "HitRecord.h"
+
+class Material;
 
 struct HitRecord
 {

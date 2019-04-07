@@ -35,6 +35,24 @@ public:
 	}
 
 	virtual bool intersect(CastedRay &r, float t_min, float t_max) const override;
+
+	float pdfValue(const glm::vec3 &o, const glm::vec3 &v) const
+	{
+		float weight = 1.0f / m_listHitables.size();
+		float sum = 0.0f;
+		for (auto& s : m_listHitables) {
+			sum += weight * s->pdfValue(o,v);
+		}
+		return sum;
+	}
+
+	glm::vec3 random(const glm::vec3 &o) const {
+		int index = int(disM(genM) * m_listHitables.size());
+		return m_listHitables[index]->random(o);
+	}
+
+
+private :
 	// TODO : check if vector is the best
 	std::vector<std::shared_ptr<Hitable>> m_listHitables;
 };
